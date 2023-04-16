@@ -5,8 +5,7 @@ class Renderer{
     getPriority(){
         return this.priority;
     }
-    render(ctx,timestamp){
-
+    render(gl,timestamp){
     }
 }
 
