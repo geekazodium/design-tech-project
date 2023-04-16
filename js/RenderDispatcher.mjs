@@ -1,4 +1,6 @@
 import { InterfaceHelper } from "./InterfaceHelper.mjs";
+import { SkyboxRenderer } from "./SkyboxRenderer.mjs";
+import { SortedNode } from "./SortedNode.mjs";
 
 class RenderDispatcher{
     constructor(canvas){
@@ -10,7 +12,14 @@ class RenderDispatcher{
             if(!ctx)return;
             this.ctx = ctx;
         }
+        this.renderers = this.initRenderers();
         this.init = true;
+        window.requestAnimationFrame((time)=>{this.render(time);});
+    }
+    initRenderers(){
+        var renderers = new Array();
+        renderers.push(new SkyboxRenderer());
+        return new SortedNode(renderers,(a,b)=>{return a.getPriority()<b.getPriority();}).getList();
     }
     getContext(canvas){
         let ctx = canvas.getContext("webgl");
@@ -20,6 +29,12 @@ class RenderDispatcher{
         if(ctx)return ctx;
         console.error("browser does not support experimental webgl, shutting down...");
         return false;
+    }
+    render(timeStamp){
+        this.renderers.forEach((renderer)=>{
+            renderer.render(this.ctx,timeStamp);
+        });
+        window.requestAnimationFrame((time)=>{this.render(time);});
     }
 }
 

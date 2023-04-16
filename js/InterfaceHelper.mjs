@@ -2,7 +2,7 @@ class InterfaceHelper{
     constructor(canvas){
         this.canvas = canvas;
         this.updateCanvasSize();
-        window.addEventListener("resize",()=>{this.updateCanvasSize()});
+        window.addEventListener("resize",()=>{this.updateCanvasSize();});
     }
     updateCanvasSize(){
         let w = window.innerWidth;
