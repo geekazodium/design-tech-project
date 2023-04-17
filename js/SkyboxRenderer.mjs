@@ -76,7 +76,7 @@ uniform mat4 mProjection;
 varying vec3 fragColor;
 
 void main(){
-    fragColor = vec3((vertPosition[1]+1.0)/2.0 ,(vertPosition[1]+1.0)/2.0 , (vertPosition[1]+1.0)/2.0);
+    fragColor = (vertPosition + vec3(1.0, 1.0, 1.0))*vec3(0.5, 0.5, 0.5);
     gl_Position = mProjection * mRotation * vec4(vertPosition, 1.0);
 }`
 
