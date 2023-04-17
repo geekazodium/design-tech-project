@@ -3,9 +3,6 @@ import { Camera } from "./Camera.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";
 
 class GameClient{
-    constructor(){
-
-    }
     main(){
         this.displaySurface = document.getElementById("main-interface");
 		this.camera = new Camera(this.displaySurface);
@@ -14,6 +11,8 @@ class GameClient{
             stop();
             return;
         }
+        document.body.style.visibility = "visible";
+        document.body.style.backgroundColor = "#ffffff00";
     }
 }
 
