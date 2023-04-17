@@ -6,7 +6,7 @@ class AssetLoader{
         this.json = undefined;
         fetch(this.path)
             .then((response) => response.json())
-            .then((json) => {console.log(json);this.json = json;})
+            .then((json) => {this.json = json;})
             .then(() => {
                 this.json.forEach(element => {
                     if(element.type == "img"){
