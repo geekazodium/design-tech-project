@@ -4,7 +4,7 @@ import { SkyboxRenderer } from "./SkyboxRenderer.mjs";
 import { SortedNode } from "./SortedNode.mjs";
 
 class RenderDispatcher{
-    constructor(canvas){
+    constructor(canvas,camera){
         this.init = false;
         this.canvas = canvas;
         this.interfaceHelper = new InterfaceHelper(canvas);
@@ -15,6 +15,7 @@ class RenderDispatcher{
         }
         this.renderers = this.initRenderers(this.ctx);
         this.renderContext = new RenederDispatcherContext(this.ctx);
+        this.camera = camera;
         this.init = true;
         window.requestAnimationFrame((time)=>{this.render(time);});
     }
@@ -33,6 +34,8 @@ class RenderDispatcher{
         return false;
     }
     render(timeStamp){
+        this.camera.update();
+        this.renderContext.update(this.canvas,this.camera);
         this.renderers.forEach((renderer)=>{
             renderer.render(this.ctx,timeStamp,this.renderContext);
         });

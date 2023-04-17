@@ -70,14 +70,14 @@ const SKYBOX_VERTEX =
 
 attribute vec3 vertPosition;
 attribute vec3 vertColor;
-uniform mat4 mView;
-uniform mat4 mProj;
+uniform mat4 mRotation;
+uniform mat4 mProjection;
 
 varying vec3 fragColor;
 
 void main(){
-  fragColor = vec3(1.0, 0.0, 1.0);
-  gl_Position = mProj * mView * vec4(vertPosition, 1.0);
+    fragColor = vec3((vertPosition[1]+1.0)/2.0 ,(vertPosition[1]+1.0)/2.0 , (vertPosition[1]+1.0)/2.0);
+    gl_Position = mProjection * mRotation * vec4(vertPosition, 1.0);
 }`
 
 const SKYBOX_FRAGMENT =
@@ -85,7 +85,7 @@ const SKYBOX_FRAGMENT =
 
 varying vec3 fragColor;
 void main(){
-  gl_FragColor = vec4(fragColor, 1.0);
+    gl_FragColor = vec4(fragColor, 1.0);
 }`
 
 class SkyboxRenderer extends Renderer{
@@ -96,8 +96,8 @@ class SkyboxRenderer extends Renderer{
 
         gl.useProgram(this.skyboxRendererProgram);
 
-        this.viewUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mView');
-        this.projectionUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mProj');
+        this.rotationUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mRotation');
+        this.projectionUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mProjection');
         
         this.skyBoxVBO = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.skyBoxVBO);
@@ -159,12 +159,12 @@ class SkyboxRenderer extends Renderer{
         gl.cullFace(gl.BACK);
         //gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
         gl.useProgram(this.skyboxRendererProgram);
-        gl.uniformMatrix4fv(this.viewUniformLocation, gl.FALSE, renderContext.viewMatrix);
+        gl.uniformMatrix4fv(this.rotationUniformLocation, gl.FALSE, renderContext.rotationMatrix);
         gl.uniformMatrix4fv(this.projectionUniformLocation, gl.FALSE, renderContext.projMatrix);
 
         gl.clearColor(0.35, 0.55, 0.9, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		gl.drawElements(gl.TRIANGLES, BOX_VERTICES.length, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(gl.TRIANGLES, BOX_INDICES.length, gl.UNSIGNED_SHORT, 0);
     }
 }
 
