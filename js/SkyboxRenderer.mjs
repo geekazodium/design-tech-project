@@ -136,10 +136,7 @@ class SkyboxRenderer extends Renderer{
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        var img = new Image(10,10);
-        img.src = "./assets/skybox.png";
-        document.body.appendChild(img);
-        console.log(img);
+        var img = document.getElementById("sky-box");
         gl.texImage2D(
             gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
             gl.UNSIGNED_BYTE,

@@ -1,0 +1,9 @@
+[
+    {
+        "id":"sky-box",
+        "src":"./assets/skybox.png",
+        "height":10,
+        "width":10,
+        "type":"img"
+    }
+]
