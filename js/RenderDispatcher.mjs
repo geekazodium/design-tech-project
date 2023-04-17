@@ -1,4 +1,3 @@
-import { InterfaceHelper } from "./InterfaceHelper.mjs";
 import { RenederDispatcherContext } from "./RenderDispatcherContext.mjs";
 import { SkyboxRenderer } from "./SkyboxRenderer.mjs";
 import { SortedNode } from "./SortedNode.mjs";
@@ -7,17 +6,21 @@ class RenderDispatcher{
     constructor(canvas,camera){
         this.init = false;
         this.canvas = canvas;
-        this.interfaceHelper = new InterfaceHelper(canvas);
-        {
-            let ctx = this.getContext(this.canvas);
-            if(!ctx)return;
-            this.ctx = ctx;
+        if(!this.updateCanvasContext()){
+            return;
         }
         this.renderers = this.initRenderers(this.ctx);
         this.renderContext = new RenederDispatcherContext(this.ctx);
         this.camera = camera;
+        this.camera.setDispatcher(this);
         this.init = true;
         window.requestAnimationFrame((time)=>{this.render(time);});
+    }
+    updateCanvasContext(){
+        let ctx = this.getContext(this.canvas);
+        if(!ctx)return false;
+        this.ctx = ctx;
+        return true;
     }
     initRenderers(ctx){
         var renderers = new Array();

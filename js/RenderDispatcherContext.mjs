@@ -15,7 +15,7 @@ class RenederDispatcherContext{
 	    mat4.rotate(this.xRotation, this.identity, cameraInstance.pitch, [1, 0, 0]);
 		mat4.mul(this.rotationMatrix, this.xRotation, this.yRotation);
         mat4.lookAt(this.viewMatrix, [0, 0, -10], [0, 0, 0], [0, 1, 0]);
-        mat4.perspective(this.projMatrix, 45/180*Math.PI, displaySurface.clientWidth / displaySurface.clientHeight, 0.1, 1000.0);
+        mat4.perspective(this.projMatrix, 105/180*Math.PI, displaySurface.clientWidth / displaySurface.clientHeight, 0.1, 1000.0);
     }
 }
 
