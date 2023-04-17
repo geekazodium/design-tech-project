@@ -1,42 +1,42 @@
 import { Renderer } from "./Renderer.mjs";
 
 const BOX_VERTICES = 
-[ // X, Y, Z   
+[ // x, y, z,     u, v
     // Top
-    -1.0, 1.0, -1.0,
-    -1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0,
-    1.0, 1.0, -1.0,
+    -1.0, 1.0, -1.0,    0, 0,
+    -1.0, 1.0, 1.0,     0, 0,
+    1.0, 1.0, 1.0,      0, 0,
+    1.0, 1.0, -1.0,     0, 0,
 
     // Left
-    -1.0, 1.0, 1.0,
-    -1.0, -1.0, 1.0,
-    -1.0, -1.0, -1.0,
-    -1.0, 1.0, -1.0,
+    -1.0, 1.0, 1.0,     0, 0,
+    -1.0, -1.0, 1.0,    0, 1,
+    -1.0, -1.0, -1.0,   1, 1,
+    -1.0, 1.0, -1.0,    1, 0,
 
     // Right
-    1.0, 1.0, 1.0,
-    1.0, -1.0, 1.0,
-    1.0, -1.0, -1.0,
-    1.0, 1.0, -1.0,
+    1.0, 1.0, 1.0,      0, 0,
+    1.0, -1.0, 1.0,     0, 1,
+    1.0, -1.0, -1.0,    1, 1,
+    1.0, 1.0, -1.0,     1, 0,
 
     // Front
-    1.0, 1.0, 1.0,
-    1.0, -1.0, 1.0,
-    -1.0, -1.0, 1.0,
-    -1.0, 1.0, 1.0,
+    1.0, 1.0, 1.0,      0, 0,
+    1.0, -1.0, 1.0,     0, 1,
+    -1.0, -1.0, 1.0,    1, 1,
+    -1.0, 1.0, 1.0,     1, 0,
 
     // Back
-    1.0, 1.0, -1.0,
-    1.0, -1.0, -1.0,
-    -1.0, -1.0, -1.0,
-    -1.0, 1.0, -1.0,
+    1.0, 1.0, -1.0,     0, 0,
+    1.0, -1.0, -1.0,    0, 1,
+    -1.0, -1.0, -1.0,   1, 1,
+    -1.0, 1.0, -1.0,    1, 0,
 
     // Bottom
-    -1.0, -1.0, -1.0, 
-    -1.0, -1.0, 1.0,  
-    1.0, -1.0, 1.0,   
-    1.0, -1.0, -1.0,  
+    -1.0, -1.0, -1.0,   1, 1,
+    -1.0, -1.0, 1.0,    1, 1,
+    1.0, -1.0, 1.0,     1, 1,
+    1.0, -1.0, -1.0,    1, 1
 ];
 
 const BOX_INDICES = [
@@ -70,23 +70,27 @@ const SKYBOX_VERTEX =
 
 attribute vec3 vertPosition;
 attribute vec3 vertColor;
+attribute vec2 texPosition;
 uniform mat4 mRotation;
 uniform mat4 mProjection;
 
-varying vec3 fragColor;
+varying vec2 fragTexPosition;
 
 void main(){
-    fragColor = (vertPosition + vec3(1.0, 1.0, 1.0))*vec3(0.5, 0.5, 0.5);
+    fragTexPosition = texPosition;
     gl_Position = mProjection * mRotation * vec4(vertPosition, 1.0);
-}`
+}`;
 
 const SKYBOX_FRAGMENT =
 `precision mediump float;
 
-varying vec3 fragColor;
+varying vec2 fragTexPosition;
+
+uniform sampler2D sampler;
+
 void main(){
-    gl_FragColor = vec4(fragColor, 1.0);
-}`
+    gl_FragColor = texture2D(sampler, fragTexPosition);
+}`;
 
 class SkyboxRenderer extends Renderer{
     constructor(gl){
@@ -108,16 +112,40 @@ class SkyboxRenderer extends Renderer{
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(BOX_INDICES), gl.STATIC_DRAW);
 
         this.positionAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, 'vertPosition');
-
+        this.textureAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, "texPosition");
         gl.vertexAttribPointer(
             this.positionAttribLocation, // Attribute location
             3, // Number of elements per attribute
             gl.FLOAT, // Type of elements
             gl.FALSE,
-            3 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+            5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
             0 // Offset from the beginning of a single vertex to this attribute
         );
-        gl.enableVertexAttribArray(this.positionAttribLocation);
+        gl.vertexAttribPointer(
+            this.textureAttribLocation,
+            2,
+            gl.FLOAT,
+            gl.FALSE,
+            5 * Float32Array.BYTES_PER_ELEMENT,
+            3 * Float32Array.BYTES_PER_ELEMENT
+        );
+
+        this.skyBoxTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.skyBoxTexture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        var img = new Image(10,10);
+        img.src = "./assets/skybox.png";
+        document.body.appendChild(img);
+        console.log(img);
+        gl.texImage2D(
+            gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            img
+	    );
+	    gl.bindTexture(gl.TEXTURE_2D, null);
     }
     compileProgram(gl){
         var vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -157,13 +185,21 @@ class SkyboxRenderer extends Renderer{
         gl.enable(gl.CULL_FACE);
         gl.frontFace(gl.CW);
         gl.cullFace(gl.BACK);
-        //gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+        
         gl.useProgram(this.skyboxRendererProgram);
+
+        gl.enableVertexAttribArray(this.positionAttribLocation);
+
+        gl.enableVertexAttribArray(this.textureAttribLocation);
+
         gl.uniformMatrix4fv(this.rotationUniformLocation, gl.FALSE, renderContext.rotationMatrix);
         gl.uniformMatrix4fv(this.projectionUniformLocation, gl.FALSE, renderContext.projMatrix);
 
         gl.clearColor(0.35, 0.55, 0.9, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.bindTexture(gl.TEXTURE_2D,this.skyBoxTexture);
+        gl.activeTexture(gl.TEXTURE0);
 		gl.drawElements(gl.TRIANGLES, BOX_INDICES.length, gl.UNSIGNED_SHORT, 0);
     }
 }

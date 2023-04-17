@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="10"
+   height="10"
+   viewBox="0 0 2.6458334 2.6458333"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486, 2022-12-01)"
+   sodipodi:docname="skybox.svg"
+   inkscape:export-filename="skybox.png"
+   inkscape:export-xdpi="192"
+   inkscape:export-ydpi="192"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="34.864183"
+     inkscape:cx="3.212466"
+     inkscape:cy="2.6674941"
+     inkscape:window-width="1440"
+     inkscape:window-height="900"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <inkscape:path-effect
+       effect="bounding_box"
+       id="path-effect1055"
+       is_visible="true"
+       lpeversion="1"
+       linkedpath=""
+       visualbounds="true" />
+    <inkscape:path-effect
+       effect="perspective-envelope"
+       up_left_point="6.9388939e-18,-2.6458333"
+       up_right_point="2.6458333,-2.6458333"
+       down_left_point="6.9388939e-18,0"
+       down_right_point="2.6458333,0"
+       id="path-effect1053"
+       is_visible="true"
+       lpeversion="1"
+       deform_type="perspective"
+       horizontal_mirror="false"
+       vertical_mirror="false"
+       overflow_perspective="false" />
+    <inkscape:path-effect
+       effect="bounding_box"
+       id="path-effect1004"
+       is_visible="true"
+       lpeversion="1"
+       linkedpath=""
+       visualbounds="false" />
+    <inkscape:path-effect
+       effect="lattice2"
+       gridpoint0="-0.6,-2.65"
+       gridpoint1="3.05,-2.6458333"
+       gridpoint2="6.9388939e-18,0"
+       gridpoint3="2.6458333,0"
+       gridpoint4="0.66145831,-2.6458333"
+       gridpoint5="1.9843749,-2.6458333"
+       gridpoint6="-0.34,0"
+       gridpoint7="1.9843749,0"
+       gridpoint8x9="1.3229166,-2.6458333"
+       gridpoint10x11="1.3229166,0"
+       gridpoint12="6.9388939e-18,-1.9843749"
+       gridpoint13="2.6458333,-1.9843749"
+       gridpoint14="6.9388939e-18,-0.66145831"
+       gridpoint15="2.6458333,-0.66145831"
+       gridpoint16="0.66145831,-1.9843749"
+       gridpoint17="1.9843749,-1.9843749"
+       gridpoint18="0.66145831,-0.66145831"
+       gridpoint19="1.9843749,-0.66145831"
+       gridpoint20x21="1.3229166,-1.9843749"
+       gridpoint22x23="1.3229166,-0.66145831"
+       gridpoint24x26="6.9388939e-18,-1.3229166"
+       gridpoint25x27="2.6458333,-1.3229166"
+       gridpoint28x30="0.66145831,-1.3229166"
+       gridpoint29x31="1.9843749,-1.3229166"
+       gridpoint32x33x34x35="1.3229166,-1.3229166"
+       id="path-effect448"
+       is_visible="true"
+       lpeversion="1"
+       horizontal_mirror="false"
+       vertical_mirror="false"
+       perimetral="false"
+       live_update="true" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ff0000;stroke-width:1.08174;-inkscape-stroke:none;stop-color:#000000"
+       id="rect1122"
+       width="2.3812499"
+       height="2.3812499"
+       x="0.13229166"
+       y="0.13229166" />
+  </g>
+</svg>
