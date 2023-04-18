@@ -2,21 +2,22 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="10"
-   height="10"
-   viewBox="0 0 2.6458334 2.6458333"
+   width="300"
+   height="300"
+   viewBox="0 0 79.375002 79.374999"
    version="1.1"
    id="svg5"
    inkscape:version="1.2.2 (b0a8486, 2022-12-01)"
    sodipodi:docname="skybox.svg"
    inkscape:export-filename="skybox.png"
-   inkscape:export-xdpi="192"
-   inkscape:export-ydpi="192"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xml:space="preserve"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
      id="namedview7"
      pagecolor="#ffffff"
      bordercolor="#000000"
@@ -27,25 +28,72 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="34.864183"
-     inkscape:cx="3.212466"
-     inkscape:cy="2.6674941"
+     inkscape:zoom="2.2666667"
+     inkscape:cx="148.0147"
+     inkscape:cy="78.970587"
      inkscape:window-width="1440"
      inkscape:window-height="900"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer1" />
-  <defs
-     id="defs2">
-    <inkscape:path-effect
+     inkscape:current-layer="layer1" /><defs
+     id="defs2"><inkscape:path-effect
+       effect="bend_path"
+       id="path-effect382"
+       is_visible="true"
+       lpeversion="1"
+       bendpath="M -79.375,39.6875 H 0"
+       prop_scale="1"
+       scale_y_rel="false"
+       vertical="false"
+       hide_knot="false" /><inkscape:path-effect
+       effect="lattice2"
+       gridpoint0="3.4,-79.375"
+       gridpoint1="79.375,-79.375"
+       gridpoint2="0,0"
+       gridpoint3="79.375,0"
+       gridpoint4="19.84375,-79.375"
+       gridpoint5="59.53125,-79.375"
+       gridpoint6="19.84375,0"
+       gridpoint7="59.53125,0"
+       gridpoint8x9="39.6875,-79.375"
+       gridpoint10x11="39.6875,0"
+       gridpoint12="0,-59.53125"
+       gridpoint13="79.375,-59.53125"
+       gridpoint14="0,-19.84375"
+       gridpoint15="79.375,-19.84375"
+       gridpoint16="19.84375,-59.53125"
+       gridpoint17="59.53125,-59.53125"
+       gridpoint18="19.84375,-19.84375"
+       gridpoint19="59.53125,-19.84375"
+       gridpoint20x21="39.6875,-59.53125"
+       gridpoint22x23="39.6875,-19.84375"
+       gridpoint24x26="0,-39.6875"
+       gridpoint25x27="79.375,-39.6875"
+       gridpoint28x30="19.84375,-39.6875"
+       gridpoint29x31="59.53125,-39.6875"
+       gridpoint32x33x34x35="39.6875,-39.6875"
+       id="path-effect356"
+       is_visible="true"
+       lpeversion="1"
+       horizontal_mirror="false"
+       vertical_mirror="false"
+       perimetral="true"
+       live_update="true" /><linearGradient
+       inkscape:collect="always"
+       id="linearGradient1181"><stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop1177" /><stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop1179" /></linearGradient><inkscape:path-effect
        effect="bounding_box"
        id="path-effect1055"
        is_visible="true"
        lpeversion="1"
        linkedpath=""
-       visualbounds="true" />
-    <inkscape:path-effect
+       visualbounds="true" /><inkscape:path-effect
        effect="perspective-envelope"
        up_left_point="6.9388939e-18,-2.6458333"
        up_right_point="2.6458333,-2.6458333"
@@ -57,15 +105,13 @@
        deform_type="perspective"
        horizontal_mirror="false"
        vertical_mirror="false"
-       overflow_perspective="false" />
-    <inkscape:path-effect
+       overflow_perspective="false" /><inkscape:path-effect
        effect="bounding_box"
        id="path-effect1004"
        is_visible="true"
        lpeversion="1"
        linkedpath=""
-       visualbounds="false" />
-    <inkscape:path-effect
+       visualbounds="false" /><inkscape:path-effect
        effect="lattice2"
        gridpoint0="-0.6,-2.65"
        gridpoint1="3.05,-2.6458333"
@@ -98,18 +144,32 @@
        horizontal_mirror="false"
        vertical_mirror="false"
        perimetral="false"
-       live_update="true" />
-  </defs>
-  <g
+       live_update="true" /><linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1181"
+       id="linearGradient1220"
+       x1="-11.556066"
+       y1="39.6875"
+       x2="79.375"
+       y2="39.6875"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-89.958334)" /></defs><g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
-    <rect
-       style="fill:#ff0000;stroke-width:1.08174;-inkscape-stroke:none;stop-color:#000000"
-       id="rect1122"
-       width="2.3812499"
-       height="2.3812499"
-       x="0.13229166"
-       y="0.13229166" />
-  </g>
-</svg>
+     id="layer1"><rect
+       style="mix-blend-mode:multiply;fill:#00b9ff;fill-opacity:1;stroke-width:1.05341;-inkscape-stroke:none;stop-color:#000000"
+       id="rect1175-7-3"
+       width="79.375"
+       height="79.375"
+       x="0"
+       y="-79.375"
+       inkscape:transform-center-x="5.4862134"
+       inkscape:transform-center-y="-5.6029413"
+       transform="rotate(90)" /><rect
+       style="mix-blend-mode:multiply;fill:url(#linearGradient1220);fill-opacity:1;stroke-width:1.05341;-inkscape-stroke:none;stop-color:#000000"
+       id="rect1175-7"
+       width="79.375"
+       height="79.375"
+       x="-89.958328"
+       y="0"
+       transform="rotate(-90)" /></g></svg>
