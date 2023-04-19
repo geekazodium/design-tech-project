@@ -5,5 +5,10 @@
         "height":10,
         "width":10,
         "type":"img"
+    },
+    {
+        "id":"testUnit",
+        "src":"./assets/testUnit.json",
+        "type":"bbModel"
     }
 ]
