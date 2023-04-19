@@ -1,29 +1,23 @@
 import { InterfaceHelper } from "./InterfaceHelper.mjs";
 
 class Camera{
-    constructor(canvas){
+    constructor(canvas,mouseInputHandler){
         this.canReorient = true;
         this.interfaceHelper = new InterfaceHelper(canvas,this);
         this.pitch = 0;
         this.yaw = 0;
-        window.addEventListener("mousemove",(event)=>{this.onMouseMove(event)});
-        canvas.addEventListener("mouseclick",(event)=>{this.onMouseClick(event)});
+        this.mouseInputHandler = mouseInputHandler;
     }
-    onMouseMove(event){
+    onMouseMove(delta){
+        var dx = delta[0];
+        var dy = delta[1];
         if(this.canReorient){
-            this.pitch += event.movementY*0.01;
-            this.pitch = clamp(this.pitch,-Math.PI/2,Math.PI/2);
-            this.yaw += event.movementX*0.01;
+            this.pitch = clamp(this.pitch + dy * 0.01,-Math.PI/2,Math.PI/2);
+            this.yaw += dx*0.01;
         }
-    }
-    onMouseClick(event){
-        this.interfaceHelper.canvas.requestPointerLock();
-        this.interfaceHelper.canvas.requestPointerHide();
     }
     update(){
-        if(this.canReorient){
-            
-        }
+        this.onMouseMove(this.mouseInputHandler.getMovedBy());
     }
     setDispatcher(renderDispatcher){
         this.renderDispatcher = renderDispatcher;

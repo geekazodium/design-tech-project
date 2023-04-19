@@ -1,21 +1,35 @@
 class MouseInputHandler{
     constructor(element){
-        this.locked = false;
         this.element = element;
+        this.delta = [0,0];
+        this.initPointerLock();
+        this.initPointerMove();
     }
-    lock(){
-        this.listener = window.addEventListener("click",async ()=>{
-            window.removeEventListener("click",this.listener);
-            this.locked = true;
+    initPointerMove(){
+        window.addEventListener("mousemove",async (event)=>{
+            if(!document.pointerLockElement)return;
+            this.delta[0]+=event.movementX;
+            this.delta[1]+=event.movementY;
+        });
+    }
+    initPointerLock(){
+        window.addEventListener("mousedown",async ()=>{
             try{
-                await this.element.requestPointerLock({
-                    unadjustedMovement: true,
-                });
+                this.attemptLockPointer(this.element);
             }catch(e){
                 document.exitPointerLock();
-                this.locked = false;
             }
         });
+    }
+    async attemptLockPointer(element){
+        await element.requestPointerLock({
+            unadjustedMovement: true,
+        });
+    }
+    getMovedBy(){
+        var ret = this.delta;
+        this.delta = [0,0];
+        return ret;
     }
 }
 

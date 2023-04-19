@@ -6,8 +6,8 @@ import { RenderDispatcher } from "./RenderDispatcher.mjs";
 class GameClient{
     main(){
         this.displaySurface = document.getElementById("main-interface");
-		this.camera = new Camera(this.displaySurface);
-        this.MouseInputHandler = new MouseInputHandler(this.displaySurface);
+        this.mouseInputHandler = new MouseInputHandler(this.displaySurface);
+		this.camera = new Camera(this.displaySurface,this.mouseInputHandler);
         this.renderDispatcher = new RenderDispatcher(this.displaySurface,this.camera);
         if(!this.renderDispatcher.init){
             stop();
@@ -15,7 +15,6 @@ class GameClient{
         }
         document.body.style.visibility = "visible";
         document.body.style.backgroundColor = "#ffffff00";
-        this.MouseInputHandler.lock();
     }
 }
 
