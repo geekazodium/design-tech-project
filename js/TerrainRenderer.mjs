@@ -65,7 +65,7 @@ const BOX_INDICES = [
     22, 20, 23
 ];
 
-const SKYBOX_VERTEX = 
+const TERRAIN_VERTEX = 
 `precision mediump float;
 
 attribute vec3 vertPosition;
@@ -81,7 +81,7 @@ void main(){
     gl_Position = mProjection * mRotation * vec4(vertPosition, 1.0);
 }`;
 
-const SKYBOX_FRAGMENT =
+const TERRAIN_FRAGMENT =
 `precision mediump float;
 
 varying vec2 fragTexPosition;
@@ -92,7 +92,7 @@ void main(){
     gl_FragColor = texture2D(sampler, fragTexPosition);
 }`;
 
-class SkyboxRenderer extends Renderer{
+class TerrainRenderer extends Renderer{
     constructor(gl){
         super(0);
 
@@ -102,13 +102,14 @@ class SkyboxRenderer extends Renderer{
 
         this.rotationUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mRotation');
         this.projectionUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mProjection');
+        this.projectionUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'm');
         
-        this.skyBoxVBO = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.skyBoxVBO);
+        this.terrainVBO = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(BOX_VERTICES), gl.STATIC_DRAW);
 
-        this.skyBoxIBO = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.skyBoxIBO);
+        this.terrainIBO = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(BOX_INDICES), gl.STATIC_DRAW);
 
         this.positionAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, 'vertPosition');
@@ -180,4 +181,4 @@ class SkyboxRenderer extends Renderer{
     }
 }
 
-export {SkyboxRenderer};
+export {TerrainRenderer};
