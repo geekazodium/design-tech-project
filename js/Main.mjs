@@ -1,11 +1,13 @@
 import { AssetLoader } from "./AssetLoader.mjs";
 import { Camera } from "./Camera.mjs";
+import { MouseInputHandler } from "./MouseInputHandler.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";
 
 class GameClient{
     main(){
         this.displaySurface = document.getElementById("main-interface");
 		this.camera = new Camera(this.displaySurface);
+        this.MouseInputHandler = new MouseInputHandler(this.displaySurface);
         this.renderDispatcher = new RenderDispatcher(this.displaySurface,this.camera);
         if(!this.renderDispatcher.init){
             stop();
@@ -13,6 +15,7 @@ class GameClient{
         }
         document.body.style.visibility = "visible";
         document.body.style.backgroundColor = "#ffffff00";
+        this.MouseInputHandler.lock();
     }
 }
 
