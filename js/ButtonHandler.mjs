@@ -1,46 +1,45 @@
 class ButtonHandler{
     constructor(){
-        this.inputStack = new InputStack();
-        window.addEventListener("keydown",(event)=>{this.inputStack.append(event)});
-        window.addEventListener("keyup",(event)=>{this.inputStack.append(event)});
-        window.addEventListener("mousedown",(event)=>{this.inputStack.append(event)});
-        window.addEventListener("mouseup",(event)=>{this.inputStack.append(event)});
+        this.keybinds = new Map();
+        window.addEventListener("keydown",(event)=>{
+            this.onPress(event);
+        });
+        window.addEventListener("keyup",(event)=>{
+            this.onRelase(event);
+        });
+        window.addEventListener("mousedown",(event)=>{
+            this.onPress(event);
+        });
+        window.addEventListener("mouseup",(event)=>{
+            this.onRelase(event);
+        });
+    }
+    registerKeybind(keybind){
+        var bucket = this.keybinds.get(keybind.key);
+        if(bucket == undefined){
+            bucket = new Array();
+            this.keybinds.set(keybind.key,bucket);
+        }
+        bucket.push(handler);
+    }
+    onPress(event){
+        var keybinds = this.keybinds.get(this.getEventId(event));
+        if(keybinds == undefined)return;
+        keybinds.forEach(keybind => {
+            keybind.onPress(event);
+        });
+    }
+    onRelase(event){
+        var keybinds = this.keybinds.get(this.getEventId(event));
+        if(keybinds == undefined)return;
+        keybinds.forEach(keybind => {
+            keybind.onRelase(event);
+        });
+    }
+    getEventId(event){
+        if(event instanceof MouseEvent) return "Mouse"+event.button;
+        else return event.code;
     }
 }
 
-class Node{
-    constructor(data, next){
-        this.data = data;
-        this.next = next;
-    }
-    relink(next){
-        this.next = next;
-    }
-}
-
-class InputStack{
-    constructor(){
-        this.initial = undefined;
-        this.last = undefined;
-    }
-    append(input){
-        if(this.initial == undefined){
-            this.initial = new Node(input,undefined);
-            this.last = this.initial;
-            return;
-        }
-        this.last.next = new Node(input,undefined);
-        this.last = this.last.next;
-    }
-    popInitial(){
-        var ret = this.initial;
-        this.initial = this.initial.next;
-        if(this.initial == undefined){
-            this.last == undefined;
-        }
-        return ret;
-    }
-    hasInitial(){
-        return !(this.initial == undefined);
-    }
-}
+export {ButtonHandler};

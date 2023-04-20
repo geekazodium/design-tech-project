@@ -18,6 +18,11 @@ class Camera{
             this.yaw += dx*0.01;
         }
     }
+    move(x,y,z){
+        this.position[0] += x;
+        this.position[1] += y;
+        this.position[2] += z;
+    }
     update(){
         this.onMouseMove(this.mouseInputHandler.getMovedBy());
     }
