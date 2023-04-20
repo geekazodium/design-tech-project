@@ -72,13 +72,14 @@ attribute vec3 vertPosition;
 attribute vec3 vertColor;
 attribute vec2 texPosition;
 uniform mat4 mRotation;
+uniform vec3 vPosition;
 uniform mat4 mProjection;
 
 varying vec2 fragTexPosition;
 
 void main(){
     fragTexPosition = texPosition;
-    gl_Position = mProjection * mRotation * vec4(vertPosition, 1.0);
+    gl_Position = mProjection * mRotation * vec4(vertPosition-vPosition, 1.0);
 }`;
 
 const TERRAIN_FRAGMENT =
@@ -89,7 +90,7 @@ varying vec2 fragTexPosition;
 uniform sampler2D sampler;
 
 void main(){
-    gl_FragColor = texture2D(sampler, fragTexPosition);
+    gl_FragColor = 1.0/texture2D(sampler, fragTexPosition);
 }`;
 
 class TerrainRenderer extends Renderer{
@@ -98,11 +99,11 @@ class TerrainRenderer extends Renderer{
 
         this.compileProgram(gl);
 
-        gl.useProgram(this.skyboxRendererProgram);
+        gl.useProgram(this.terrainRenderProgram);
 
-        this.rotationUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mRotation');
-        this.projectionUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mProjection');
-        this.projectionUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'm');
+        this.rotationUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'mRotation');
+        this.projectionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'mProjection');
+        this.projectionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'vPosition');
         
         this.terrainVBO = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
@@ -112,8 +113,8 @@ class TerrainRenderer extends Renderer{
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(BOX_INDICES), gl.STATIC_DRAW);
 
-        this.positionAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, 'vertPosition');
-        this.textureAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, "texPosition");
+        this.positionAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'vertPosition');
+        this.textureAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, "texPosition");
         gl.vertexAttribPointer(
             this.positionAttribLocation, // Attribute location
             3, // Number of elements per attribute
@@ -149,13 +150,13 @@ class TerrainRenderer extends Renderer{
         var vertexShader = gl.createShader(gl.VERTEX_SHADER);
         var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-        gl.shaderSource(vertexShader, SKYBOX_VERTEX);
-        gl.shaderSource(fragmentShader, SKYBOX_FRAGMENT);
+        gl.shaderSource(vertexShader, TERRAIN_VERTEX);
+        gl.shaderSource(fragmentShader, TERRAIN_FRAGMENT);
 
         this.compileShader(gl,vertexShader);
         this.compileShader(gl,fragmentShader);
 
-        this.skyboxRendererProgram = this.linkProgram(gl,vertexShader,fragmentShader);
+        this.terrainRenderProgram = this.linkProgram(gl,vertexShader,fragmentShader);
     }
     render(gl,timestamp,renderContext){
         gl.enable(gl.DEPTH_TEST);
@@ -163,7 +164,7 @@ class TerrainRenderer extends Renderer{
         gl.frontFace(gl.CW);
         gl.cullFace(gl.BACK);
         
-        gl.useProgram(this.skyboxRendererProgram);
+        gl.useProgram(this.terrainRenderProgram);
 
         gl.enableVertexAttribArray(this.positionAttribLocation);
 
@@ -171,9 +172,7 @@ class TerrainRenderer extends Renderer{
 
         gl.uniformMatrix4fv(this.rotationUniformLocation, gl.FALSE, renderContext.rotationMatrix);
         gl.uniformMatrix4fv(this.projectionUniformLocation, gl.FALSE, renderContext.projMatrix);
-
-        gl.clearColor(0.35, 0.55, 0.9, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gl.uniform3fv(this.positionUniformLocation, renderContext.cameraInstance.position);
 
         gl.bindTexture(gl.TEXTURE_2D,this.skyBoxTexture);
         gl.activeTexture(gl.TEXTURE0);

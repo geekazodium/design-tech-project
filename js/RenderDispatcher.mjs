@@ -1,6 +1,7 @@
 import { RenederDispatcherContext } from "./RenderDispatcherContext.mjs";
 import { SkyboxRenderer } from "./SkyboxRenderer.mjs";
 import { SortedNode } from "./SortedNode.mjs";
+import { TerrainRenderer } from "./TerrainRenderer.mjs";
 
 class RenderDispatcher{
     constructor(canvas,camera){
@@ -25,6 +26,7 @@ class RenderDispatcher{
     initRenderers(ctx){
         var renderers = new Array();
         renderers.push(new SkyboxRenderer(ctx));
+        renderers.push(new TerrainRenderer(ctx));
         return new SortedNode(renderers,(a,b)=>{return a.getPriority()<b.getPriority();}).getList();
     }
     getContext(canvas){

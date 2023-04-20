@@ -1,9 +1,11 @@
 import { InterfaceHelper } from "./InterfaceHelper.mjs";
+import * as Vec3 from "/libraries/esm/vec3.js";
 
 class Camera{
     constructor(canvas,mouseInputHandler){
         this.canReorient = true;
         this.interfaceHelper = new InterfaceHelper(canvas,this);
+        this.position = new Float32Array(3);
         this.pitch = 0;
         this.yaw = 0;
         this.mouseInputHandler = mouseInputHandler;

@@ -11,6 +11,7 @@ class RenederDispatcherContext{
         mat4.identity(this.identity);
     }
     update(displaySurface,cameraInstance){
+        this.cameraInstance = cameraInstance;
 		mat4.rotate(this.yRotation, this.identity, cameraInstance.yaw, [0, 1, 0]);
 	    mat4.rotate(this.xRotation, this.identity, cameraInstance.pitch, [1, 0, 0]);
 		mat4.mul(this.rotationMatrix, this.xRotation, this.yRotation);
