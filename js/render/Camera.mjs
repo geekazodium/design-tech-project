@@ -1,4 +1,4 @@
-import { InterfaceHelper } from "./InterfaceHelper.mjs";
+import { InterfaceHelper } from "../InterfaceHelper.mjs";
 import * as Vec3 from "/libraries/esm/vec3.js";
 
 class Camera{

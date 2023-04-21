@@ -1,0 +1,12 @@
+{
+    "version":1,
+    "textures":[
+        {
+            "x":0,
+            "y":0,
+            "width":16,
+            "height":16,
+            "src":"./assets/skybox.png"
+        }
+    ]
+}

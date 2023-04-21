@@ -1,6 +1,6 @@
-import { AssetLoader } from "./AssetLoader.mjs";
+import { AssetLoader } from "./fileLoader/AssetLoader.mjs";
 import { ButtonHandler } from "./ButtonHandler.mjs";
-import { Camera } from "./Camera.mjs";
+import { Camera } from "./render/Camera.mjs";
 import { Keybind } from "./Keybind.mjs";
 import { MouseInputHandler } from "./MouseInputHandler.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";

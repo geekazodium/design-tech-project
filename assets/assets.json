@@ -7,8 +7,14 @@
         "type":"img"
     },
     {
-        "id":"testUnit",
+        "id":"test-unit",
         "src":"./assets/testUnit.json",
         "type":"bbModel"
+    },
+    {
+        "id":"terrain-textures",
+        "src":"./assets/terrain/terrainAssets.json",
+        "target":"terrainAssets",
+        "type":"textureRefsheet"
     }
 ]

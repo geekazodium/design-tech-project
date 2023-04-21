@@ -65,23 +65,22 @@ const BOX_INDICES = [
     22, 20, 23
 ];
 
-const TERRAIN_VERTEX = 
+const SKYBOX_VERTEX = 
 `precision mediump float;
 
 attribute vec3 vertPosition;
 attribute vec2 texPosition;
 uniform mat4 mRotation;
-uniform vec3 vPosition;
 uniform mat4 mProjection;
 
 varying vec2 fragTexPosition;
 
 void main(){
     fragTexPosition = texPosition;
-    gl_Position = mProjection * mRotation * vec4(vertPosition - vPosition, 1.0);
+    gl_Position = mProjection * mRotation * vec4(vertPosition, 1.0);
 }`;
 
-const TERRAIN_FRAGMENT =
+const SKYBOX_FRAGMENT =
 `precision mediump float;
 
 varying vec2 fragTexPosition;
@@ -89,38 +88,40 @@ varying vec2 fragTexPosition;
 uniform sampler2D sampler;
 
 void main(){
-    gl_FragColor = texture2D(sampler, fragTexPosition);
+    gl_FragColor = texture2D(sampler, fragTexPosition)-vec4(0.0, 0.0, 0.0, 0.1);
 }`;
 
-class TerrainRenderer extends Renderer{
+class SkyboxRenderer extends Renderer{
     constructor(gl){
-        super(1);
+        super(0);
 
         this.compileProgram(gl);
 
-        gl.useProgram(this.terrainRenderProgram);
+        gl.useProgram(this.skyboxRendererProgram);
 
-        this.rotationUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'mRotation');
-        this.projectionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'mProjection');
-        this.positionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'vPosition');
+        this.rotationUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mRotation');
+        this.projectionUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mProjection');
         
-        this.terrainVBO = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
+        this.skyBoxVBO = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.skyBoxVBO);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(BOX_VERTICES), gl.STATIC_DRAW);
 
-        this.terrainIBO = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
+        this.skyBoxIBO = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.skyBoxIBO);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(BOX_INDICES), gl.STATIC_DRAW);
 
-        this.positionAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'vertPosition');
-        this.textureAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'texPosition');
+        this.positionAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, 'vertPosition');
+        this.textureAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, "texPosition");
+
+        console.log(this.positionAttribLocation);
+        
         gl.vertexAttribPointer(
-            this.positionAttribLocation,
-            3,
-            gl.FLOAT,
+            this.positionAttribLocation, // Attribute location
+            3, // Number of elements per attribute
+            gl.FLOAT, // Type of elements
             gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT,
-            0 
+            5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
+            0 // Offset from the beginning of a single vertex to this attribute
         );
         gl.vertexAttribPointer(
             this.textureAttribLocation,
@@ -131,8 +132,8 @@ class TerrainRenderer extends Renderer{
             3 * Float32Array.BYTES_PER_ELEMENT
         );
 
-        this.terrainTexture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this.terrainTexture);
+        this.skyBoxTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.skyBoxTexture);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -149,21 +150,21 @@ class TerrainRenderer extends Renderer{
         var vertexShader = gl.createShader(gl.VERTEX_SHADER);
         var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-        gl.shaderSource(vertexShader, TERRAIN_VERTEX);
-        gl.shaderSource(fragmentShader, TERRAIN_FRAGMENT);
+        gl.shaderSource(vertexShader, SKYBOX_VERTEX);
+        gl.shaderSource(fragmentShader, SKYBOX_FRAGMENT);
 
         this.compileShader(gl,vertexShader);
         this.compileShader(gl,fragmentShader);
 
-        this.terrainRenderProgram = this.linkProgram(gl,vertexShader,fragmentShader);
+        this.skyboxRendererProgram = this.linkProgram(gl,vertexShader,fragmentShader);
     }
     render(gl,timestamp,renderContext){
-        gl.enable(gl.DEPTH_TEST);
+        gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
-        gl.frontFace(gl.CCW);
+        gl.frontFace(gl.CW);
         gl.cullFace(gl.BACK);
         
-        gl.useProgram(this.terrainRenderProgram);
+        gl.useProgram(this.skyboxRendererProgram);
 
         gl.enableVertexAttribArray(this.positionAttribLocation);
 
@@ -171,12 +172,14 @@ class TerrainRenderer extends Renderer{
 
         gl.uniformMatrix4fv(this.rotationUniformLocation, gl.FALSE, renderContext.rotationMatrix);
         gl.uniformMatrix4fv(this.projectionUniformLocation, gl.FALSE, renderContext.projMatrix);
-        gl.uniform3fv(this.positionUniformLocation, renderContext.cameraInstance.position);
 
-        gl.bindTexture(gl.TEXTURE_2D,this.terrainTexture);
+        gl.clearColor(0.35, 0.55, 0.9, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.bindTexture(gl.TEXTURE_2D,this.skyBoxTexture);
         gl.activeTexture(gl.TEXTURE0);
 		gl.drawElements(gl.TRIANGLES, BOX_INDICES.length, gl.UNSIGNED_SHORT, 0);
     }
 }
 
-export {TerrainRenderer};
+export {SkyboxRenderer};

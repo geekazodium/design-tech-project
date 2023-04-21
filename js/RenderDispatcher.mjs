@@ -1,7 +1,7 @@
-import { RenederDispatcherContext } from "./RenderDispatcherContext.mjs";
-import { SkyboxRenderer } from "./SkyboxRenderer.mjs";
+import { RenederDispatcherContext } from "./render/RenderDispatcherContext.mjs";
+import { SkyboxRenderer } from "./render/SkyboxRenderer.mjs";
 import { SortedNode } from "./SortedNode.mjs";
-import { TerrainRenderer } from "./TerrainRenderer.mjs";
+import { TerrainRenderer } from "./render/TerrainRenderer.mjs";
 
 class RenderDispatcher{
     constructor(canvas,camera){
@@ -42,6 +42,7 @@ class RenderDispatcher{
         this.camera.update();
         this.renderContext.update(this.canvas,this.camera);
         this.renderers.forEach((renderer)=>{
+            if(renderer instanceof TerrainRenderer) return;
             renderer.render(this.ctx,timeStamp,this.renderContext);
         });
         window.requestAnimationFrame((time)=>{this.render(time);});
