@@ -15,6 +15,7 @@ class RenderDispatcher{
         this.camera = camera;
         this.camera.setDispatcher(this);
         this.init = true;
+        //this.ctx.getExtension();
         window.requestAnimationFrame((time)=>{this.render(time);});
     }
     updateCanvasContext(){
@@ -42,7 +43,7 @@ class RenderDispatcher{
         this.camera.update();
         this.renderContext.update(this.canvas,this.camera);
         this.renderers.forEach((renderer)=>{
-            if(renderer instanceof TerrainRenderer) return;
+            //if(renderer instanceof TerrainRenderer) return;
             renderer.render(this.ctx,timeStamp,this.renderContext);
         });
         window.requestAnimationFrame((time)=>{this.render(time);});

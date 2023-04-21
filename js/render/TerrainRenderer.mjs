@@ -4,39 +4,39 @@ const BOX_VERTICES =
 [ // x, y, z,     u, v
     // Top
     -1.0, 1.0, -1.0,    0, 0,
-    -1.0, 1.0, 1.0,     0, 1,
-    1.0, 1.0, 1.0,      1, 1,
-    1.0, 1.0, -1.0,     1, 0,
+    -1.0, 1.0, 1.0,     0, 1/8,
+    1.0, 1.0, 1.0,      1/8, 1/8,
+    1.0, 1.0, -1.0,     1/8, 0,
 
     // Left
     -1.0, 1.0, 1.0,     0, 0,
-    -1.0, -1.0, 1.0,    0, 1,
-    -1.0, -1.0, -1.0,   1, 1,
-    -1.0, 1.0, -1.0,    1, 0,
+    -1.0, -1.0, 1.0,    0, 1/8,
+    -1.0, -1.0, -1.0,   1/8, 1/8,
+    -1.0, 1.0, -1.0,    1/8, 0,
 
     // Right
     1.0, 1.0, 1.0,      0, 0,
-    1.0, -1.0, 1.0,     0, 1,
-    1.0, -1.0, -1.0,    1, 1,
-    1.0, 1.0, -1.0,     1, 0,
+    1.0, -1.0, 1.0,     0, 1/8,
+    1.0, -1.0, -1.0,    1/8, 1/8,
+    1.0, 1.0, -1.0,     1/8, 0,
 
     // Front
     1.0, 1.0, 1.0,      0, 0,
-    1.0, -1.0, 1.0,     0, 1,
-    -1.0, -1.0, 1.0,    1, 1,
-    -1.0, 1.0, 1.0,     1, 0,
+    1.0, -1.0, 1.0,     0, 1/8,
+    -1.0, -1.0, 1.0,    1/8, 1/8,
+    -1.0, 1.0, 1.0,     1/8, 0,
 
     // Back
     1.0, 1.0, -1.0,     0, 0,
-    1.0, -1.0, -1.0,    0, 1,
-    -1.0, -1.0, -1.0,   1, 1,
-    -1.0, 1.0, -1.0,    1, 0,
+    1.0, -1.0, -1.0,    0, 1/8,
+    -1.0, -1.0, -1.0,   1/8, 1/8,
+    -1.0, 1.0, -1.0,    1/8, 0,
 
     // Bottom
     -1.0, -1.0, -1.0,   0, 0,
-    -1.0, -1.0, 1.0,    0, 1,
-    1.0, -1.0, 1.0,     1, 1,
-    1.0, -1.0, -1.0,    1, 0
+    -1.0, -1.0, 1.0,    0, 1/8,
+    1.0, -1.0, 1.0,     1/8, 1/8,
+    1.0, -1.0, -1.0,    1/8, 0
 ];
 
 const BOX_INDICES = [
@@ -105,19 +105,18 @@ class TerrainRenderer extends Renderer{
         this.rotationUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'mRotation');
         this.projectionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'mProjection');
         this.positionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'vPosition');
-        
+
         this.terrainVBO = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(BOX_VERTICES), gl.DYNAMIC_DRAW);
-
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(BOX_VERTICES), gl.STATIC_DRAW);
+        
         this.terrainIBO = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(BOX_INDICES), gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(BOX_INDICES), gl.STATIC_DRAW);
 
         this.positionAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'vertPosition');
         this.textureAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'texPosition');
 
-        console.log(this.positionAttribLocation);
         gl.vertexAttribPointer(
             this.positionAttribLocation,
             3,
@@ -177,9 +176,17 @@ class TerrainRenderer extends Renderer{
         gl.uniformMatrix4fv(this.projectionUniformLocation, gl.FALSE, renderContext.projMatrix);
         gl.uniform3fv(this.positionUniformLocation, renderContext.cameraInstance.position);
 
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
+        
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
+
         gl.bindTexture(gl.TEXTURE_2D,this.terrainTexture);
         gl.activeTexture(gl.TEXTURE0);
 		gl.drawElements(gl.TRIANGLES, BOX_INDICES.length, gl.UNSIGNED_SHORT, 0);
+        
+        gl.disableVertexAttribArray(this.positionAttribLocation);
+
+        gl.disableVertexAttribArray(this.textureAttribLocation);
     }
 }
 

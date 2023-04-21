@@ -113,8 +113,6 @@ class SkyboxRenderer extends Renderer{
         this.positionAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, 'vertPosition');
         this.textureAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, "texPosition");
 
-        console.log(this.positionAttribLocation);
-        
         gl.vertexAttribPointer(
             this.positionAttribLocation, // Attribute location
             3, // Number of elements per attribute
@@ -173,12 +171,20 @@ class SkyboxRenderer extends Renderer{
         gl.uniformMatrix4fv(this.rotationUniformLocation, gl.FALSE, renderContext.rotationMatrix);
         gl.uniformMatrix4fv(this.projectionUniformLocation, gl.FALSE, renderContext.projMatrix);
 
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.skyBoxVBO);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.skyBoxIBO);
+
         gl.clearColor(0.35, 0.55, 0.9, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         gl.bindTexture(gl.TEXTURE_2D,this.skyBoxTexture);
         gl.activeTexture(gl.TEXTURE0);
 		gl.drawElements(gl.TRIANGLES, BOX_INDICES.length, gl.UNSIGNED_SHORT, 0);
+
+        gl.disableVertexAttribArray(this.positionAttribLocation);
+
+        gl.disableVertexAttribArray(this.textureAttribLocation);
     }
 }
 
