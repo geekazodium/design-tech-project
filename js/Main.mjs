@@ -7,7 +7,6 @@ import { RenderDispatcher } from "./RenderDispatcher.mjs";
 
 class GameClient{
     main(){
-        this.loop = setInterval(()=>{this.tick();},10);
         this.displaySurface = document.getElementById("main-interface");
         this.mouseInputHandler = new MouseInputHandler(this.displaySurface);
         this.buttonInputHandler = new ButtonHandler();
@@ -17,9 +16,10 @@ class GameClient{
             stop();
             return;
         }
+        this.initKeybinds();
+        this.loop = setInterval(()=>{this.tick();},10);
         document.body.style.visibility = "visible";
         document.body.style.backgroundColor = "#ffffff00";
-        this.initKeybinds();
     }
     initKeybinds(){
         this.forwardKey = new Keybind("KeyW");
@@ -32,8 +32,18 @@ class GameClient{
         this.buttonInputHandler.registerKeybind(this.rightKey);
     }
     tick(){
-        
-        this.camera.move();
+        var velocity = 0.05;
+        var forward = this.forwardKey.isPressed*velocity+this.backwardKey.isPressed*-velocity;
+        var left = this.rightKey.isPressed*velocity+this.leftKey.isPressed*-velocity;
+        var movement = [-forward,left];
+        this.rotate(movement,-this.camera.yaw);
+        this.camera.move(movement[0],0,movement[1]);
+    }
+    rotate(i,a){
+        var x = i[0];
+        var y = i[1];
+        i[0] = Math.sin(a)*x + Math.cos(a)*y;
+        i[1] = Math.cos(a)*x - Math.sin(a)*y; 
     }
 }
 

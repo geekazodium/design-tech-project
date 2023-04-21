@@ -69,7 +69,6 @@ const SKYBOX_VERTEX =
 `precision mediump float;
 
 attribute vec3 vertPosition;
-attribute vec3 vertColor;
 attribute vec2 texPosition;
 uniform mat4 mRotation;
 uniform mat4 mProjection;
@@ -89,7 +88,7 @@ varying vec2 fragTexPosition;
 uniform sampler2D sampler;
 
 void main(){
-    gl_FragColor = texture2D(sampler, fragTexPosition);
+    gl_FragColor = texture2D(sampler, fragTexPosition)-vec4(0.0, 0.0, 0.0, 0.1);
 }`;
 
 class SkyboxRenderer extends Renderer{
@@ -157,7 +156,7 @@ class SkyboxRenderer extends Renderer{
         this.skyboxRendererProgram = this.linkProgram(gl,vertexShader,fragmentShader);
     }
     render(gl,timestamp,renderContext){
-        gl.enable(gl.DEPTH_TEST);
+        gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
         gl.frontFace(gl.CW);
         gl.cullFace(gl.BACK);

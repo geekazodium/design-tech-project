@@ -20,7 +20,7 @@ class ButtonHandler{
             bucket = new Array();
             this.keybinds.set(keybind.key,bucket);
         }
-        bucket.push(handler);
+        bucket.push(keybind);
     }
     onPress(event){
         var keybinds = this.keybinds.get(this.getEventId(event));

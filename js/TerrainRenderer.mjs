@@ -69,7 +69,6 @@ const TERRAIN_VERTEX =
 `precision mediump float;
 
 attribute vec3 vertPosition;
-attribute vec3 vertColor;
 attribute vec2 texPosition;
 uniform mat4 mRotation;
 uniform vec3 vPosition;
@@ -79,7 +78,7 @@ varying vec2 fragTexPosition;
 
 void main(){
     fragTexPosition = texPosition;
-    gl_Position = mProjection * mRotation * vec4(vertPosition-vPosition, 1.0);
+    gl_Position = mProjection * mRotation * vec4(vertPosition - vPosition, 1.0);
 }`;
 
 const TERRAIN_FRAGMENT =
@@ -90,12 +89,12 @@ varying vec2 fragTexPosition;
 uniform sampler2D sampler;
 
 void main(){
-    gl_FragColor = 1.0/texture2D(sampler, fragTexPosition);
+    gl_FragColor = texture2D(sampler, fragTexPosition);
 }`;
 
 class TerrainRenderer extends Renderer{
     constructor(gl){
-        super(0);
+        super(1);
 
         this.compileProgram(gl);
 
@@ -103,7 +102,7 @@ class TerrainRenderer extends Renderer{
 
         this.rotationUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'mRotation');
         this.projectionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'mProjection');
-        this.projectionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'vPosition');
+        this.positionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'vPosition');
         
         this.terrainVBO = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
@@ -114,14 +113,14 @@ class TerrainRenderer extends Renderer{
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(BOX_INDICES), gl.STATIC_DRAW);
 
         this.positionAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'vertPosition');
-        this.textureAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, "texPosition");
+        this.textureAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'texPosition');
         gl.vertexAttribPointer(
-            this.positionAttribLocation, // Attribute location
-            3, // Number of elements per attribute
-            gl.FLOAT, // Type of elements
+            this.positionAttribLocation,
+            3,
+            gl.FLOAT,
             gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-            0 // Offset from the beginning of a single vertex to this attribute
+            5 * Float32Array.BYTES_PER_ELEMENT,
+            0 
         );
         gl.vertexAttribPointer(
             this.textureAttribLocation,
@@ -132,8 +131,8 @@ class TerrainRenderer extends Renderer{
             3 * Float32Array.BYTES_PER_ELEMENT
         );
 
-        this.skyBoxTexture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this.skyBoxTexture);
+        this.terrainTexture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this.terrainTexture);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -161,7 +160,7 @@ class TerrainRenderer extends Renderer{
     render(gl,timestamp,renderContext){
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
-        gl.frontFace(gl.CW);
+        gl.frontFace(gl.CCW);
         gl.cullFace(gl.BACK);
         
         gl.useProgram(this.terrainRenderProgram);
@@ -174,7 +173,7 @@ class TerrainRenderer extends Renderer{
         gl.uniformMatrix4fv(this.projectionUniformLocation, gl.FALSE, renderContext.projMatrix);
         gl.uniform3fv(this.positionUniformLocation, renderContext.cameraInstance.position);
 
-        gl.bindTexture(gl.TEXTURE_2D,this.skyBoxTexture);
+        gl.bindTexture(gl.TEXTURE_2D,this.terrainTexture);
         gl.activeTexture(gl.TEXTURE0);
 		gl.drawElements(gl.TRIANGLES, BOX_INDICES.length, gl.UNSIGNED_SHORT, 0);
     }
