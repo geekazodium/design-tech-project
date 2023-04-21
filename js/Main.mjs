@@ -30,14 +30,19 @@ class GameClient{
         this.buttonInputHandler.registerKeybind(this.leftKey);
         this.rightKey = new Keybind("KeyD");
         this.buttonInputHandler.registerKeybind(this.rightKey);
+        this.upKey = new Keybind("Space");
+        this.buttonInputHandler.registerKeybind(this.upKey);
+        this.downKey = new Keybind("ShiftLeft");
+        this.buttonInputHandler.registerKeybind(this.downKey);
     }
     tick(){
         var velocity = 0.05;
-        var forward = this.forwardKey.isPressed*velocity+this.backwardKey.isPressed*-velocity;
-        var left = this.rightKey.isPressed*velocity+this.leftKey.isPressed*-velocity;
-        var movement = [-forward,left];
+        var forward = (this.forwardKey.isPressed+this.backwardKey.isPressed*-1)*velocity;
+        var left =  (this.leftKey.isPressed+this.rightKey.isPressed*-1)*velocity;
+        var up =  (this.upKey.isPressed+this.downKey.isPressed*-1)*velocity;
+        var movement = [-forward,-left];
         this.rotate(movement,-this.camera.yaw);
-        this.camera.move(movement[0],0,movement[1]);
+        this.camera.move(movement[0],up,movement[1]);
     }
     rotate(i,a){
         var x = i[0];

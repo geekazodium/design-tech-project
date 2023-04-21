@@ -11,11 +11,12 @@ class Camera{
         this.mouseInputHandler = mouseInputHandler;
     }
     onMouseMove(delta){
+        const multiplier = 0.0025;
         var dx = delta[0];
         var dy = delta[1];
         if(this.canReorient){
-            this.pitch = clamp(this.pitch + dy * 0.01,-Math.PI/2,Math.PI/2);
-            this.yaw += dx*0.01;
+            this.pitch = clamp(this.pitch + dy * multiplier,-Math.PI/2,Math.PI/2);
+            this.yaw += dx*multiplier;
         }
     }
     move(x,y,z){
