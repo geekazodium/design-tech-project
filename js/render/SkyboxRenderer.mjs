@@ -113,23 +113,6 @@ class SkyboxRenderer extends Renderer{
         this.positionAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, 'vertPosition');
         this.textureAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, "texPosition");
 
-        gl.vertexAttribPointer(
-            this.positionAttribLocation, // Attribute location
-            3, // Number of elements per attribute
-            gl.FLOAT, // Type of elements
-            gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT, // Size of an individual vertex
-            0 // Offset from the beginning of a single vertex to this attribute
-        );
-        gl.vertexAttribPointer(
-            this.textureAttribLocation,
-            2,
-            gl.FLOAT,
-            gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT,
-            3 * Float32Array.BYTES_PER_ELEMENT
-        );
-
         this.skyBoxTexture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, this.skyBoxTexture);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -173,6 +156,23 @@ class SkyboxRenderer extends Renderer{
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.skyBoxVBO);
 
+        gl.vertexAttribPointer(
+            this.positionAttribLocation,
+            3,
+            gl.FLOAT,
+            gl.FALSE,
+            5 * Float32Array.BYTES_PER_ELEMENT, 
+            0 
+        );
+        gl.vertexAttribPointer(
+            this.textureAttribLocation,
+            2,
+            gl.FLOAT,
+            gl.FALSE,
+            5 * Float32Array.BYTES_PER_ELEMENT,
+            3 * Float32Array.BYTES_PER_ELEMENT
+        );
+        
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.skyBoxIBO);
 
         gl.clearColor(0.35, 0.55, 0.9, 1.0);
@@ -185,6 +185,9 @@ class SkyboxRenderer extends Renderer{
         gl.disableVertexAttribArray(this.positionAttribLocation);
 
         gl.disableVertexAttribArray(this.textureAttribLocation);
+    }
+    bindIBO(){
+        
     }
 }
 
