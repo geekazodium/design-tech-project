@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded",(event)=>{
 });
 
 function loadAssets(){
-    assetLoader = new AssetLoader("./../assets/assets.json");
+    assetLoader = new AssetLoader("./assets/assets.json");
     assetLoader.load(()=>{assetsLoaded = true;});
 }
 

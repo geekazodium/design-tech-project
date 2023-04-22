@@ -1,4 +1,4 @@
-import * as mat4 from "/libraries/esm/mat4.js";
+import * as mat4 from "./../../libraries/esm/mat4.js";
 
 class RenederDispatcherContext{
     constructor(gl){

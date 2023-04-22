@@ -1,5 +1,5 @@
 import { InterfaceHelper } from "../InterfaceHelper.mjs";
-import * as Vec3 from "/libraries/esm/vec3.js";
+import * as Vec3 from "./../../libraries/esm/vec3.js";
 
 class Camera{
     constructor(canvas,mouseInputHandler){
