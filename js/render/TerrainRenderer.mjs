@@ -1,3 +1,4 @@
+import { TerrainBufferBuilder } from "../TerrainBufferBuilder.mjs";
 import { Renderer } from "./Renderer.mjs";
 
 const BOX_VERTICES = 
@@ -94,7 +95,7 @@ void main(){
 
 class TerrainRenderer extends Renderer{
     constructor(gl){
-        super(1);
+        super(1,"terrain");
 
         this.textureAtlas = document.getElementById("terrain-texture-atlas");
 
@@ -107,12 +108,8 @@ class TerrainRenderer extends Renderer{
         this.positionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'vPosition');
 
         this.terrainVBO = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(BOX_VERTICES), gl.STATIC_DRAW);
-        
         this.terrainIBO = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(BOX_INDICES), gl.STATIC_DRAW);
+        this.updateTerrainData(gl,BOX_VERTICES,BOX_INDICES);
 
         this.positionAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'vertPosition');
         this.textureAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'texPosition');
@@ -130,6 +127,13 @@ class TerrainRenderer extends Renderer{
             img
 	    );
 	    gl.bindTexture(gl.TEXTURE_2D, null);
+    }
+    updateTerrainData(gl,VERTICES,INDICES){
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(VERTICES), gl.DYNAMIC_DRAW);
+ 
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(INDICES), gl.DYNAMIC_DRAW);
     }
     compileProgram(gl){
         var vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -178,14 +182,19 @@ class TerrainRenderer extends Renderer{
         );
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
-        
+
         gl.bindTexture(gl.TEXTURE_2D,this.terrainTexture);
         gl.activeTexture(gl.TEXTURE0);
-		gl.drawElements(gl.TRIANGLES, BOX_INDICES.length, gl.UNSIGNED_SHORT, 0);
+		gl.drawElements(gl.TRIANGLES, this.bufferBuilder.bufferLength, gl.UNSIGNED_SHORT, 0);
         
         gl.disableVertexAttribArray(this.positionAttribLocation);
 
         gl.disableVertexAttribArray(this.textureAttribLocation);
+    }
+    attachBufferBuilder(bufferBuilder){
+        if(!(bufferBuilder instanceof TerrainBufferBuilder))return;
+        this.bufferBuilder = bufferBuilder;
+        bufferBuilder.setBuildTo(this.terrainVBO,this.terrainIBO);
     }
 }
 

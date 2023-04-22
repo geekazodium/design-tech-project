@@ -1,6 +1,7 @@
 class Renderer{
-    constructor(priority){
+    constructor(priority,id){
         this.priority = priority;
+        this.id = id;
     }
     getPriority(){
         return this.priority;
@@ -29,6 +30,9 @@ class Renderer{
             return;
         }
         return program;
+    }
+    attachBufferBuilder(bufferBuilder){
+
     }
 }
 

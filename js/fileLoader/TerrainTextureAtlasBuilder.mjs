@@ -1,3 +1,4 @@
+import { TextureAtlas } from "../render/TextureAtlas.mjs";
 
 class TerrainTextureAtlasBuilder{
     constructor(){
@@ -26,6 +27,7 @@ class TerrainTextureAtlasBuilder{
             this.pasteToAtlas(texture,drawContext);
         });
         this.setCurrentVersion(this.assets.version);
+        return new TextureAtlas(canvas,textures);
     }
     getCurrentTextureVersion(){
         return parseInt(localStorage.getItem("textureVersion")|"0");

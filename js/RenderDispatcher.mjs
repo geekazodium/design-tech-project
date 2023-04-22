@@ -1,21 +1,24 @@
 import { RenederDispatcherContext } from "./render/RenderDispatcherContext.mjs";
 import { SkyboxRenderer } from "./render/SkyboxRenderer.mjs";
-import { SortedNode } from "./SortedNode.mjs";
+import { SortedNode } from "./utils/SortedNode.mjs";
 import { TerrainRenderer } from "./render/TerrainRenderer.mjs";
 
 class RenderDispatcher{
     constructor(canvas,camera){
+        this.rebuildTimer = 0;
+
         this.init = false;
         this.canvas = canvas;
         if(!this.updateCanvasContext()){
             return;
         }
-        this.renderers = this.initRenderers(this.ctx);
+        this.renderersIdMap = new Map();
+        this.renderers = this.initRenderers(this.ctx,this.renderersIdMap);
         this.renderContext = new RenederDispatcherContext(this.ctx);
+        this.bufferBuilders = new Array();
         this.camera = camera;
         this.camera.setDispatcher(this);
         this.init = true;
-        //this.ctx.getExtension();
         window.requestAnimationFrame((time)=>{this.render(time);});
     }
     updateCanvasContext(){
@@ -24,11 +27,15 @@ class RenderDispatcher{
         this.ctx = ctx;
         return true;
     }
-    initRenderers(ctx){
+    initRenderers(ctx,idMap){
         var renderers = new Array();
         renderers.push(new SkyboxRenderer(ctx));
         renderers.push(new TerrainRenderer(ctx));
-        return new SortedNode(renderers,(a,b)=>{return a.getPriority()<b.getPriority();}).getList();
+        var ret = new SortedNode(renderers,(a,b)=>{return a.getPriority()<b.getPriority();}).getList();
+        ret.forEach((item)=>{
+            idMap.set(item.id,item);
+        });
+        return ret;
     }
     getContext(canvas){
         let ctx = canvas.getContext("webgl");
@@ -39,11 +46,24 @@ class RenderDispatcher{
         console.error("browser does not support experimental webgl, shutting down...");
         return false;
     }
+    attachBufferBuilder(bufferBuilder,rendererId){
+        this.bufferBuilders.push(bufferBuilder);
+        this.renderersIdMap.get(rendererId).attachBufferBuilder(bufferBuilder);
+    }
+    rebuildBuffers(ctx){
+        this.bufferBuilders.forEach((builder)=>{
+            builder.rebuild(ctx);
+        })
+    }
     render(timeStamp){
         this.camera.update();
+        this.rebuildTimer--;
+        if(this.rebuildTimer<=0){
+            this.rebuildTimer = 100;
+            this.rebuildBuffers(this.ctx);
+        }
         this.renderContext.update(this.canvas,this.camera);
         this.renderers.forEach((renderer)=>{
-            //if(renderer instanceof TerrainRenderer) return;
             renderer.render(this.ctx,timeStamp,this.renderContext);
         });
         window.requestAnimationFrame((time)=>{this.render(time);});

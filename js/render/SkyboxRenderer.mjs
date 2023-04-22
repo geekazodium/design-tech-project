@@ -93,14 +93,14 @@ void main(){
 
 class SkyboxRenderer extends Renderer{
     constructor(gl){
-        super(0);
+        super(0,"skybox");
 
         this.compileProgram(gl);
 
         gl.useProgram(this.skyboxRendererProgram);
 
-        this.rotationUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mRotation');
-        this.projectionUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, 'mProjection');
+        this.rotationUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, "mRotation");
+        this.projectionUniformLocation = gl.getUniformLocation(this.skyboxRendererProgram, "mProjection");
         
         this.skyBoxVBO = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.skyBoxVBO);
@@ -110,7 +110,7 @@ class SkyboxRenderer extends Renderer{
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.skyBoxIBO);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(BOX_INDICES), gl.STATIC_DRAW);
 
-        this.positionAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, 'vertPosition');
+        this.positionAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, "vertPosition");
         this.textureAttribLocation = gl.getAttribLocation(this.skyboxRendererProgram, "texPosition");
 
         this.skyBoxTexture = gl.createTexture();
@@ -172,7 +172,7 @@ class SkyboxRenderer extends Renderer{
             5 * Float32Array.BYTES_PER_ELEMENT,
             3 * Float32Array.BYTES_PER_ELEMENT
         );
-        
+
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.skyBoxIBO);
 
         gl.clearColor(0.35, 0.55, 0.9, 1.0);

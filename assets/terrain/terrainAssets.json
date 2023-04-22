@@ -2,11 +2,20 @@
     "version":1,
     "textures":[
         {
+            "id":"skybox-side",
             "x":0,
             "y":0,
             "width":16,
             "height":16,
             "src":"./assets/skybox.png"
+        },
+        {
+            "id":"grass-side",
+            "x":16,
+            "y":0,
+            "width":16,
+            "height":16,
+            "src":"./assets/terrain/grass-side.png"
         }
     ]
 }

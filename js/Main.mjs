@@ -4,6 +4,7 @@ import { Camera } from "./render/Camera.mjs";
 import { Keybind } from "./Keybind.mjs";
 import { MouseInputHandler } from "./MouseInputHandler.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";
+import { TerrainBufferBuilder } from "./TerrainBufferBuilder.mjs";
 
 class GameClient{
     main(){
@@ -11,7 +12,9 @@ class GameClient{
         this.mouseInputHandler = new MouseInputHandler(this.displaySurface);
         this.buttonInputHandler = new ButtonHandler();
 		this.camera = new Camera(this.displaySurface,this.mouseInputHandler);
+        this.terrainBufferBuilder = new TerrainBufferBuilder(assetLoader.terrainTextureAtlas);
         this.renderDispatcher = new RenderDispatcher(this.displaySurface,this.camera);
+        this.renderDispatcher.attachBufferBuilder(this.terrainBufferBuilder,"terrain");
         if(!this.renderDispatcher.init){
             stop();
             return;
@@ -54,6 +57,7 @@ class GameClient{
 
 var loaded = false;
 var assetsLoaded = false;
+var assetLoader;
 var client = new GameClient();
 
 document.addEventListener("DOMContentLoaded",(event)=>{
@@ -61,7 +65,7 @@ document.addEventListener("DOMContentLoaded",(event)=>{
 });
 
 function loadAssets(){
-    let assetLoader = new AssetLoader("./../assets/assets.json");
+    assetLoader = new AssetLoader("./../assets/assets.json");
     assetLoader.load(()=>{assetsLoaded = true;});
 }
 

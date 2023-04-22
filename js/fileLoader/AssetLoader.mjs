@@ -5,6 +5,7 @@ class AssetLoader{
         this.path = path;
         this.loaders = new Map();
         this.terrainTextureAtlasBuilder = new TerrainTextureAtlasBuilder();
+        this.terrainTextureAtlas = undefined;
         this.initImgLoader();
         this.initBBMLoader();
         this.initTerrainTextureAtlasBuilder();
@@ -32,7 +33,9 @@ class AssetLoader{
             if(element.target == "terrainAssets"){
                 fetch(element.src)
                     .then((response) => response.json())
-                    .then((json) => {this.terrainTextureAtlasBuilder.load(json);});
+                    .then((json) => {
+                        this.terrainTextureAtlas = this.terrainTextureAtlasBuilder.load(json);
+                    });
             }
         });
     }
