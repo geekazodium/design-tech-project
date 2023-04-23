@@ -50,7 +50,7 @@ class RenderDispatcher{
         this.bufferBuilders.push(bufferBuilder);
         this.renderersIdMap.get(rendererId).attachBufferBuilder(bufferBuilder);
     }
-    rebuildBuffers(ctx){
+    async rebuildBuffers(ctx){
         this.bufferBuilders.forEach((builder)=>{
             builder.rebuild(ctx);
         })

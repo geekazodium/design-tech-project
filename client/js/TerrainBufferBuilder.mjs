@@ -12,84 +12,12 @@ class TerrainBufferBuilder extends BufferBuilder{
     }
     rebuild(gl){
         super.rebuild();
-        var tempVBO =
-        [ // x, y, z,     u, v
-            // Top
-            -1.0, 1.0, -1.0,    0, 0,
-            -1.0, 1.0, 1.0,     0, 1/8,
-            1.0, 1.0, 1.0,      1/8, 1/8,
-            1.0, 1.0, -1.0,     1/8, 0,
-        
-            // Left
-            -1.0, 1.0, 1.0,     0, 0,
-            -1.0, -1.0, 1.0,    0, 1/8,
-            -1.0, -1.0, -1.0,   1/8, 1/8,
-            -1.0, 1.0, -1.0,    1/8, 0,
-        
-            // Right
-            1.0, 1.0, 1.0,      0, 0,
-            1.0, -1.0, 1.0,     0, 1/8,
-            1.0, -1.0, -1.0,    1/8, 1/8,
-            1.0, 1.0, -1.0,     1/8, 0,
-        
-            // Front
-            1.0, 1.0, 1.0,      0, 0,
-            1.0, -1.0, 1.0,     0, 1/8,
-            -1.0, -1.0, 1.0,    1/8, 1/8,
-            -1.0, 1.0, 1.0,     1/8, 0,
-        
-            // Back
-            1.0, 1.0, -1.0,     0, 0,
-            1.0, -1.0, -1.0,    0, 1/8,
-            -1.0, -1.0, -1.0,   1/8, 1/8,
-            -1.0, 1.0, -1.0,    1/8, 0,
-        
-            // Bottom
-            -1.0, -1.0, -1.0,   0, 0,
-            -1.0, -1.0, 1.0,    0, 1/8,
-            1.0, -1.0, 1.0,     1/8, 1/8,
-            1.0, -1.0, -1.0,    1/8, 0
-        ];
-        
-        var tempIBO = [
-            // Top
-            0, 1, 2,
-            0, 2, 3,
-        
-            // Left
-            5, 4, 6,
-            6, 4, 7,
-        
-            // Right
-            8, 9, 10,
-            8, 10, 11,
-        
-            // Front
-            13, 12, 14,
-            15, 14, 12,
-        
-            // Back
-            16, 17, 18,
-            16, 18, 19,
-        
-            // Bottom
-            21, 20, 22,
-            22, 20, 23
-        ];
+        var tempVBO = [];
+        var tempIBO = [];
 
-        this.indexCounter = 24;
-
-        this.createCubeFaceMPos(tempVBO,tempIBO,this.FACE_POS_Y,[0,-1,-2],[0,0],[1,1]);
-
-        this.createCubeFaceMPos(tempVBO,tempIBO,this.FACE_NEG_Y,[0,1,-2],[0,0],[1,1]);
-
-        this.createCubeFaceMPos(tempVBO,tempIBO,this.FACE_NEG_X,[0,0,-2],[0,0],[1,1]);
-
-        this.createCubeFaceMPos(tempVBO,tempIBO,this.FACE_POS_X,[-1,-1,-2],[0,0],[1,1]);
-
-        this.createCubeFaceMPos(tempVBO,tempIBO,this.FACE_NEG_Z,[-1,-1,-2],[0,0],[1,1]);
-
-        this.createCubeFaceMPos(tempVBO,tempIBO,this.FACE_POS_Z,[-1,-1,-2],[0,0],[1,1]);
+        this.createCube(tempVBO,tempIBO,0,0,-2,[0,0],[1/8,1/8]);
+        this.createCube(tempVBO,tempIBO,1,0,-2,[1/8,0],[2/8,1/8]);
+        this.createCube(tempVBO,tempIBO,1,1,-2,[2/8,0],[3/8,1/8]);
 
         this.bufferLength = tempIBO.length;
         gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
@@ -110,6 +38,20 @@ class TerrainBufferBuilder extends BufferBuilder{
     }
     createCubeFaceMPos(VBO,IBO,direction,minPos,uvStart,uvEnd){
         return this.createCubeFaceMXYZ(VBO,IBO,direction,minPos[0],minPos[1],minPos[2],uvStart,uvEnd);
+    }
+    createCube(VBO,IBO,minX,minY,minZ,uvMin,uvMax){
+
+        this.createCubeFaceMPos(VBO,IBO,this.FACE_POS_Y,[minX,minY+1,minZ],uvMin,uvMax);
+
+        this.createCubeFaceMPos(VBO,IBO,this.FACE_NEG_Y,[minX,minY,minZ],uvMin,uvMax);
+
+        this.createCubeFaceMPos(VBO,IBO,this.FACE_NEG_X,[minX,minY,minZ],uvMin,uvMax);
+
+        this.createCubeFaceMPos(VBO,IBO,this.FACE_POS_X,[minX+1,minY,minZ],uvMin,uvMax);
+
+        this.createCubeFaceMPos(VBO,IBO,this.FACE_NEG_Z,[minX,minY,minZ+1],uvMin,uvMax);
+
+        this.createCubeFaceMPos(VBO,IBO,this.FACE_POS_Z,[minX,minY,minZ],uvMin,uvMax);
     }
     createCubeFaceMXYZ(VBO,IBO,direction,minX,minY,minZ,uvStart,uvEnd){
         if(direction == this.FACE_POS_Y){
