@@ -1,22 +1,33 @@
 {
-  "name": "design-tech-project",
-  "version": "1.0.0",
-  "description": "design tech project",
-  "main": "Server.js",
-  "scripts": {
-    "test": ""
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/geekazodium/design-tech-project.git"
-  },
-  "author": "Geekazodium",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/geekazodium/design-tech-project/issues"
-  },
-  "homepage": "https://github.com/geekazodium/design-tech-project#readme",
-  "dependencies": {
-    "express": "^4.18.2"
-  }
+    "name": "design-tech-project",
+    "version": "1.0.0",
+    "description": "design tech project",
+    "main": "Server.js",
+    "scripts": {
+        "start": "node ./bin/www",
+        "devstart": "nodemon ./bin/www",
+        "serverstart": "DEBUG=express-locallibrary-tutorial:* npm run devstart"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/geekazodium/design-tech-project.git"
+    },
+    "author": "Geekazodium",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/geekazodium/design-tech-project/issues"
+    },
+    "homepage": "https://github.com/geekazodium/design-tech-project#readme",
+    "dependencies": {
+        "express": "^4.18.2",
+        "cookie-parser": "~1.4.4",
+        "debug": "~2.6.9",
+        "http-errors": "~1.6.3",
+        "jade": "^0.29.0",
+        "morgan": "~1.9.1"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.4"
+    },
+    "private": true
 }
