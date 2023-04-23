@@ -4,7 +4,7 @@
   "description": "design tech project",
   "main": "Server.js",
   "scripts": {
-    "test": "SET DEBUG=server:* & npm start"
+    "test": ""
   },
   "repository": {
     "type": "git",
