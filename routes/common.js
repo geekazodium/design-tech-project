@@ -13,6 +13,8 @@ function loadFile(fileName){
 loadFile("/Packets.mjs");
 loadFile("/Packet.mjs");
 loadFile("/C2S/RequestConnectionC2SPacket.mjs");
+loadFile("/SHA-256.mjs");
+loadFile("/C2S/RegisterAccountC2SPacket.mjs");
 loadFile("/BigInteger.js");
 
 router.get('/*', function(req, res, next) {

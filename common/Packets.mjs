@@ -1,9 +1,14 @@
+import { RegisterAccountC2SPacket } from "./C2S/RegisterAccountC2SPacket.mjs";
 import { RequestConnectionC2SPacket } from "./C2S/RequestConnectionC2SPacket.mjs";
 
 class Packets{
     constructor(){
         this.packetMap = new Map();
-        this.packetMap.set(new RequestConnectionC2SPacket().id,RequestConnectionC2SPacket);
+        this.addPacket(RequestConnectionC2SPacket);
+        this.addPacket(RegisterAccountC2SPacket);
+    }
+    addPacket(packetClass){
+        this.packetMap.set(new packetClass().id,packetClass);
     }
     getBuffer(packet){
         return new Uint8Array([packet.id].concat(packet.write()));
