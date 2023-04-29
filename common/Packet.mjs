@@ -6,7 +6,7 @@ class Packet{
     write(){
         return [];
     }
-    read(){
+    read(buffer){
 
     }
 }

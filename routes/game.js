@@ -21,10 +21,8 @@ router.put('/',async function(req, res, next){
     }
     var buffer = req.read();
     if(!buffer)return;
-    buffer.forEach(element => {
-        console.log(element);
-    });
-    res.send(buffer);
+    packets.recieveServer(buffer);
+    res.send();
 });
 
 module.exports = router;
