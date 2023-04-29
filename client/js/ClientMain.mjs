@@ -5,9 +5,17 @@ import { Keybind } from "./Keybind.mjs";
 import { MouseInputHandler } from "./MouseInputHandler.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";
 import { TerrainBufferBuilder } from "./TerrainBufferBuilder.mjs";
+import { Packets } from "../../common/Packets.mjs";
+import { Packet } from "../../common/Packet.mjs";
+import { RequestConnectionC2SPacket } from "/common/C2S/RequestConnectionC2SPacket.mjs";
 
 class GameClient{
     main(){
+        this.clientPacketHandler = new Packets();
+        var packet = new RequestConnectionC2SPacket();
+        packet.setUserName("you Suck");
+        packet.setPassword("something");
+        this.clientPacketHandler.sendClient(packet);
         this.displaySurface = document.getElementById("main-interface");
         this.mouseInputHandler = new MouseInputHandler(this.displaySurface);
         this.buttonInputHandler = new ButtonHandler();
