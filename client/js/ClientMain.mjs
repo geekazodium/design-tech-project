@@ -4,14 +4,10 @@ import { Camera } from "./render/Camera.mjs";
 import { Keybind } from "./Keybind.mjs";
 import { MouseInputHandler } from "./MouseInputHandler.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";
-import { TerrainBufferBuilder } from "./TerrainBufferBuilder.mjs";
 import { Packets } from "../../common/Packets.mjs";
-import { Packet } from "../../common/Packet.mjs";
 import { RequestConnectionC2SPacket } from "/common/C2S/RequestConnectionC2SPacket.mjs";
 import { RegisterAccountC2SPacket } from "../../common/C2S/RegisterAccountC2SPacket.mjs";
 import { LoginScreen } from "./screens/LoginScreen.mjs";
-import { SkyboxRenderer } from "./render/SkyboxRenderer.mjs";
-import { TerrainRenderer } from "./render/TerrainRenderer.mjs";
 import { IngameScreen } from "./screens/IngameScreen.mjs";
 
 class GameClient{
@@ -27,13 +23,16 @@ class GameClient{
             stop();
             return;
         }
-        this.screen = new IngameScreen(this.getScreenParams());
-        this.screen = new IngameScreen(this.getScreenParams());
-        this.screen = new LoginScreen(this.renderDispatcher);
+        this.setScreen(new LoginScreen(this.renderDispatcher));
         this.initKeybinds();
         this.loop = setInterval(()=>{this.tick();},10);
         document.body.style.visibility = "visible";
         document.body.style.backgroundColor = "#ffffff00";
+    }
+    setScreen(screen){
+        if(this.screen!=undefined)this.screen.onExit();
+        this.screen = screen;
+        this.screen.onSet();
     }
     getScreenParams(){
         return {

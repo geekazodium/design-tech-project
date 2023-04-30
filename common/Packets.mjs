@@ -22,7 +22,9 @@ class Packets{
             method: "PUT",
             body: this.getBuffer(packet)
         })
-        .then(res => {this.res = res})
+        .then(res => {
+            return res.body.getReader().read();
+        }).then(bytes => console.log(bytes))
         .catch(err => alert(err));
     }
     sendServer(packet,res) {
@@ -37,18 +39,18 @@ class Packets{
         packet.read(buffer);
         this.notifyListeners(packet,packetContainer);
     }
-    recieveServer(buffer){
+    recieveServer(buffer,res){
         var packetId = buffer[0];
         var packetContainer = this.packetMap.get(packetId);
         var packetClass = packetContainer.class;
         if(packetClass == undefined)return;
         var packet = new packetClass();
         packet.read(buffer);
-        this.notifyListeners(packet,packetContainer);
+        this.notifyListeners(packet,packetContainer,res);
     }
-    notifyListeners(packet,container){
+    notifyListeners(packet,container,res){
         container.listeners.forEach((callback)=>{
-            callback(packet);
+            callback(packet,res);
         });
     }
 }

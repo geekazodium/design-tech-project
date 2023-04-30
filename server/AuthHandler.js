@@ -23,6 +23,7 @@ class AuthHelper{
         if(!this.users.has(user))return false;
         var userContainer = this.users.get(user);
         var hash = sha256(password.concat(userContainer.salt));
+        console.log(hash,userContainer.hash);
         return hash === userContainer.hash;
     }
     encodeToHex(array){

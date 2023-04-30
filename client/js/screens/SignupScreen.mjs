@@ -2,10 +2,10 @@ import { client } from "../ClientMain.mjs";
 import { RenderDispatcher } from "../RenderDispatcher.mjs";
 import { AbstractScreen } from "./AbstractScreen.mjs";
 import { IngameScreen } from "./IngameScreen.mjs";
+import { LoginScreen } from "./LoginScreen.mjs";
 import { MenuScreen } from "./MenuScreen.mjs";
-import { SignupScreen } from "./SignupScreen.mjs";
 
-class LoginScreen extends MenuScreen{
+class SignupScreen extends MenuScreen{
     onExit(){
         document.body.removeChild(this.div);
     }
@@ -18,19 +18,23 @@ class LoginScreen extends MenuScreen{
         this.title.innerText = "ThisThingy";
         this.styleAsTitle(this.title);
 
-        this.signupButton = this.createButton(0,135,100,"sign up instead");
-        this.signupButton.onclick = (event)=>{
-            client.setScreen(new SignupScreen(this.renderDispatcher));
+        this.loginButton = this.createButton(0,135,100,"log in instead");
+        this.loginButton.onclick = (event)=>{
+            client.setScreen(new LoginScreen(this.renderDispatcher));
         }
 
-        this.loginButton = this.createButton(0,50,100,"log in");
-        this.loginButton.onclick = (event)=>{
-            client.login(this.usernameInput.value,this.passwordInput.value);
+        this.signupButton = this.createButton(0,85,100,"sign up");
+        this.signupButton.onclick = (event)=>{
+            if(this.passwordInput.value != this.verifyInput.value){
+                return;
+            }
+            client.registerAccount(this.usernameInput.value,this.passwordInput.value);
         };
         
         this.usernameInput = this.createField(0,-35,150,"username");
         this.passwordInput = this.createField(0,0,150,"password");
+        this.verifyInput = this.createField(0,35,150,"verify password");
     }
 }
 
-export {LoginScreen};
+export {SignupScreen};

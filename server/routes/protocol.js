@@ -16,8 +16,19 @@ async function registerServerListeners(){
     while(packets === undefined || authHelper === undefined){
         await resolveAfter(90);
     }
-    packets.registerListener(2,(packet)=>{
-        authHelper.signUp(packet.username,packet.password);
+    packets.registerListener(2,(packet,res)=>{
+        if(authHelper.signUp(packet.username,packet.password)){
+            res.send("success");
+            return;
+        }
+        res.send("failed");
+    });
+    packets.registerListener(1,(packet,res)=>{
+        if(authHelper.login(packet.username,packet.password)){
+            res.send("success");
+            return;
+        }
+        res.send("failed");
     });
 }
 
@@ -31,8 +42,7 @@ router.put('/',async function(req, res, next){
     }
     var buffer = req.read();
     if(!buffer)return;
-    packets.recieveServer(buffer);
-    res.send();
+    packets.recieveServer(buffer,res);
 });
 
 module.exports = router;
