@@ -1,4 +1,10 @@
 class SortedNode{
+    /**
+     * 
+     * @param {Array} section 
+     * @param {Function} compareFunction 
+     * @returns SortedNode for that section
+     */
     constructor(section,compareFunction){
         if(section.length < 1){
             this.item = undefined;
@@ -42,6 +48,7 @@ class SortedNode{
         if(this.after){
             ret = ret.concat(this.after.getList());
         }
+        if(this.item == undefined) return [];
         return ret;
     }
 }

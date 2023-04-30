@@ -27,14 +27,30 @@ class GameClient{
             stop();
             return;
         }
-        this.screen = new IngameScreen({"renderDispatcher":this.renderDispatcher,"assetLoader":assetLoader});
-        this.screen = new IngameScreen({"renderDispatcher":this.renderDispatcher,"assetLoader":assetLoader});
+        this.screen = new IngameScreen(this.getScreenParams());
+        this.screen = new IngameScreen(this.getScreenParams());
         this.screen = new LoginScreen(this.renderDispatcher);
         this.initKeybinds();
         this.loop = setInterval(()=>{this.tick();},10);
         document.body.style.visibility = "visible";
         document.body.style.backgroundColor = "#ffffff00";
     }
+    getScreenParams(){
+        return {
+            "mouse":this.mouseInputHandler,
+            "button":this.buttonInputHandler,
+            "renderDispatcher":this.renderDispatcher,
+            "assetLoader":assetLoader
+        };
+    }
+    getAssetLoader(){
+        return assetLoader;
+    }
+    /**
+     * 
+     * @param {String} username 
+     * @param {String} password 
+     */
     registerAccount(username,password){
         var packet = new RegisterAccountC2SPacket();
         packet.setUserName(username);
@@ -45,12 +61,22 @@ class GameClient{
         packet.setPassword(password);
         this.clientPacketHandler.sendClient(packet);
     }
+    /**
+     * 
+     * @param {String} username 
+     * @param {String} password 
+     */
     login(username,password){
         var packet = new RequestConnectionC2SPacket();
         packet.setUserName(username);
         packet.setPassword(password);
         this.clientPacketHandler.sendClient(packet);
     }
+    /**
+     * @description SLOPPY CODE TO GET CAMERA MOVEMENT WORKING,
+     * I'M SO SORRY I WILL MOVE THIS SOMEWHERE THAT MAKES SENSE
+     * LATER.
+     */
     initKeybinds(){
         this.forwardKey = new Keybind("KeyW");
         this.buttonInputHandler.registerKeybind(this.forwardKey);
@@ -106,3 +132,5 @@ function onSpinWait(condition,end){
 
 loadAssets();
 onSpinWait(()=>{return ((!loaded)||(!assetsLoaded))},()=>{client.main()});
+
+export {client};

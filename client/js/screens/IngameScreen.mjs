@@ -1,3 +1,4 @@
+import { client } from "../ClientMain.mjs";
 import { TerrainBufferBuilder } from "../TerrainBufferBuilder.mjs";
 import { SkyboxRenderer } from "../render/SkyboxRenderer.mjs";
 import { TerrainRenderer } from "../render/TerrainRenderer.mjs";
@@ -14,6 +15,7 @@ class IngameScreen extends AbstractScreen{
                 new TerrainRenderer(this.renderDispatcher.ctx)
             ]);
             this.renderDispatcher.attachBufferBuilder(this.terrainBufferBuilder,"terrain","terrainBufferBuilder");
+            client.mouseInputHandler.canLock = true;
         }else{
             super(params.ingameScreen.renderDispatcher);
             this.terrainBufferBuilder = params.ingameScreen.terrainBufferBuilder;

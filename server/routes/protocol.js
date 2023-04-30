@@ -35,7 +35,5 @@ router.put('/',async function(req, res, next){
     res.send();
 });
 
-console.log(authHelper);
-
 module.exports = router;
 registerServerListeners();

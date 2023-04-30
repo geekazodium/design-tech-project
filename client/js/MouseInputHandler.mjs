@@ -1,5 +1,6 @@
 class MouseInputHandler{
     constructor(element){
+        this.canLock = false;
         this.element = element;
         this.delta = [0,0];
         this.initPointerLock();
@@ -15,6 +16,7 @@ class MouseInputHandler{
     initPointerLock(){
         window.addEventListener("mousedown",async ()=>{
             try{
+                if(!this.canLock)return;
                 this.attemptLockPointer(this.element);
             }catch(e){
                 document.exitPointerLock();
