@@ -12,20 +12,34 @@ class AuthHelper{
         }
     }
     signUp(user,password){
-        var salt = this.encodeToHex(this._crypto_.randomBytes(64));
+        if(this.users.has(user))return false;
+        var salt = this.encodeToHex(this._crypto_.randomBytes(66));
         var hash = sha256(password.concat(salt));
         this.users.set(user,{"salt": salt,"hash": hash});
         console.log(this.users);
+        return true;
     }
     login(user,password){
-
+        if(!this.users.has(user))return false;
+        var userContainer = this.users.get(user);
+        var hash = sha256(password.concat(userContainer.salt));
+        return hash === userContainer.hash;
     }
     encodeToHex(array){
-        var l = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
+        var l = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ=_";
         var s = [];
+        var extraBits = 0;
+        var extraLength = 0;
         array.forEach(n => {
-            s.push(l[n&0xf]);
-            s.push(l[(n>>4)&0xf]);
+            s.push(l[n&0b111111]);
+            extraBits = extraBits<<2;
+            extraLength += 2;
+            extraBits += n>>6;
+            if(extraLength>=6){
+                extraLength = 0;
+                s.push(l[extraBits&0b111111]);
+                extraBits = 0;
+            }
         });
         return s.join("");
     }

@@ -6,16 +6,15 @@ import { TerrainRenderer } from "./render/TerrainRenderer.mjs";
 class RenderDispatcher{
     constructor(canvas,camera){
         this.rebuildTimer = 0;
-
         this.init = false;
         this.canvas = canvas;
         if(!this.updateCanvasContext()){
             return;
         }
         this.renderersIdMap = new Map();
-        this.renderers = this.initRenderers(this.ctx,this.renderersIdMap);
+        this.renderers = new Array();
         this.renderContext = new RenederDispatcherContext(this.ctx);
-        this.bufferBuilders = new Array();
+        this.bufferBuilders = new Map();
         this.camera = camera;
         this.camera.setDispatcher(this);
         this.init = true;
@@ -27,15 +26,14 @@ class RenderDispatcher{
         this.ctx = ctx;
         return true;
     }
-    initRenderers(ctx,idMap){
-        var renderers = new Array();
-        renderers.push(new SkyboxRenderer(ctx));
-        renderers.push(new TerrainRenderer(ctx));
+    initRenderers(renderers){
+        var idMap = new Map();
         var ret = new SortedNode(renderers,(a,b)=>{return a.getPriority()<b.getPriority();}).getList();
         ret.forEach((item)=>{
             idMap.set(item.id,item);
         });
-        return ret;
+        this.renderers = ret;
+        this.renderersIdMap = idMap;
     }
     getContext(canvas){
         let ctx = canvas.getContext("webgl");
@@ -46,26 +44,26 @@ class RenderDispatcher{
         console.error("browser does not support experimental webgl, shutting down...");
         return false;
     }
-    attachBufferBuilder(bufferBuilder,rendererId){
-        this.bufferBuilders.push(bufferBuilder);
+    attachBufferBuilder(bufferBuilder,rendererId,key){
+        this.bufferBuilders.set(key,bufferBuilder);
         this.renderersIdMap.get(rendererId).attachBufferBuilder(bufferBuilder);
     }
     async rebuildBuffers(ctx){
-        this.bufferBuilders.forEach((builder)=>{
+        this.bufferBuilders.forEach((builder,key)=>{
             builder.rebuild(ctx);
-        })
+        });
     }
     render(timeStamp){
         this.camera.update();
+        this.renderContext.update(this.canvas,this.camera);
+        this.renderers.forEach((renderer)=>{
+            renderer.render(this.ctx,timeStamp,this.renderContext);
+        });
         this.rebuildTimer--;
         if(this.rebuildTimer<=0){
             this.rebuildTimer = 100;
             this.rebuildBuffers(this.ctx);
         }
-        this.renderContext.update(this.canvas,this.camera);
-        this.renderers.forEach((renderer)=>{
-            renderer.render(this.ctx,timeStamp,this.renderContext);
-        });
         window.requestAnimationFrame((time)=>{this.render(time);});
     }
 }

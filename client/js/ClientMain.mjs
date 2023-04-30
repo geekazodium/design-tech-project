@@ -9,29 +9,47 @@ import { Packets } from "../../common/Packets.mjs";
 import { Packet } from "../../common/Packet.mjs";
 import { RequestConnectionC2SPacket } from "/common/C2S/RequestConnectionC2SPacket.mjs";
 import { RegisterAccountC2SPacket } from "../../common/C2S/RegisterAccountC2SPacket.mjs";
+import { LoginScreen } from "./screens/LoginScreen.mjs";
+import { SkyboxRenderer } from "./render/SkyboxRenderer.mjs";
+import { TerrainRenderer } from "./render/TerrainRenderer.mjs";
+import { IngameScreen } from "./screens/IngameScreen.mjs";
 
 class GameClient{
     main(){
+        this.screen = undefined;
         this.clientPacketHandler = new Packets();
-        var packet = new RegisterAccountC2SPacket();
-        packet.setUserName("you Suck");
-        packet.setPassword("something");
-        this.clientPacketHandler.sendClient(packet);
         this.displaySurface = document.getElementById("main-interface");
         this.mouseInputHandler = new MouseInputHandler(this.displaySurface);
         this.buttonInputHandler = new ButtonHandler();
 		this.camera = new Camera(this.displaySurface,this.mouseInputHandler);
-        this.terrainBufferBuilder = new TerrainBufferBuilder(assetLoader.terrainTextureAtlas);
         this.renderDispatcher = new RenderDispatcher(this.displaySurface,this.camera);
-        this.renderDispatcher.attachBufferBuilder(this.terrainBufferBuilder,"terrain");
         if(!this.renderDispatcher.init){
             stop();
             return;
         }
+        this.screen = new IngameScreen({"renderDispatcher":this.renderDispatcher,"assetLoader":assetLoader});
+        this.screen = new IngameScreen({"renderDispatcher":this.renderDispatcher,"assetLoader":assetLoader});
+        this.screen = new LoginScreen(this.renderDispatcher);
         this.initKeybinds();
         this.loop = setInterval(()=>{this.tick();},10);
         document.body.style.visibility = "visible";
         document.body.style.backgroundColor = "#ffffff00";
+    }
+    registerAccount(username,password){
+        var packet = new RegisterAccountC2SPacket();
+        packet.setUserName(username);
+        packet.setPassword(password);
+        this.clientPacketHandler.sendClient(packet);
+        packet = new RequestConnectionC2SPacket();
+        packet.setUserName(username);
+        packet.setPassword(password);
+        this.clientPacketHandler.sendClient(packet);
+    }
+    login(username,password){
+        var packet = new RequestConnectionC2SPacket();
+        packet.setUserName(username);
+        packet.setPassword(password);
+        this.clientPacketHandler.sendClient(packet);
     }
     initKeybinds(){
         this.forwardKey = new Keybind("KeyW");
