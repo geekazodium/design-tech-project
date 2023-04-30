@@ -1,11 +1,13 @@
 import { Packet } from "../Packet.mjs";
 
+const RequestConnectionC2SPacketId = 1;
+
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 
 class RequestConnectionC2SPacket extends Packet{
     constructor(){
-        super(1);
+        super(RequestConnectionC2SPacketId);
     }
     setPassword(password){
         var password = Array.from(textEncoder.encode(password));
@@ -31,8 +33,7 @@ class RequestConnectionC2SPacket extends Packet{
         }
         this.username = textDecoder.decode(Buffer.from(buf[0]));
         this.password = textDecoder.decode(Buffer.from(buf[1]));
-        console.log(this.username,this.password);
     }
 }
 
-export {RequestConnectionC2SPacket};
+export {RequestConnectionC2SPacket,RequestConnectionC2SPacketId};

@@ -7,8 +7,12 @@ class Packets{
         this.addPacket(RequestConnectionC2SPacket);
         this.addPacket(RegisterAccountC2SPacket);
     }
+    registerListener(packetId,listener){
+        var packet = this.packetMap.get(packetId);
+        packet.listeners.push(listener);
+    }
     addPacket(packetClass){
-        this.packetMap.set(new packetClass().id,packetClass);
+        this.packetMap.set(new packetClass().id,{"class":packetClass,"listeners":[]});
     }
     getBuffer(packet){
         return new Uint8Array([packet.id].concat(packet.write()));
@@ -26,17 +30,26 @@ class Packets{
     }
     recieveClient(buffer){
         var packetId = buffer[0];
-        var packetClass = this.packetMap.get(packetId);
+        var packetContainer = this.packetMap.get(packetId);
+        var packetClass = packet.class;
         if(packetClass == undefined)return;
         var packet = new packetClass();
         packet.read(buffer);
+        this.notifyListeners(packet,packetContainer);
     }
     recieveServer(buffer){
         var packetId = buffer[0];
-        var packetClass = this.packetMap.get(packetId);
+        var packetContainer = this.packetMap.get(packetId);
+        var packetClass = packetContainer.class;
         if(packetClass == undefined)return;
         var packet = new packetClass();
         packet.read(buffer);
+        this.notifyListeners(packet,packetContainer);
+    }
+    notifyListeners(packet,container){
+        container.listeners.forEach((callback)=>{
+            callback(packet);
+        });
     }
 }
 

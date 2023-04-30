@@ -3,12 +3,18 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var Game = require("./Game").Game;
 
-var gameRouter = require("./routes/game");
+const { AuthHelper } = require('./AuthHandler');
+
+const authHelper = new AuthHelper();
+exports.authHelper = authHelper;
+var app = express();
+
+var protocolRouter = require("./routes/protocol");
 var commonRouter = require("./routes/common");
 var usersRouter = require('./routes/users');
 
-var app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -16,7 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname,"../client")));
 
-app.use('/game', gameRouter);
+app.use('/game', protocolRouter);
 app.use('/common', commonRouter);
 app.use('/users', usersRouter);
 
