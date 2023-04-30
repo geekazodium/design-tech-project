@@ -1,5 +1,5 @@
 var packets;
-import("./../common/Packets.mjs").then((module)=>{packets = new module.Packets();}); 
+import("./../../common/Packets.mjs").then((module)=>{packets = new module.Packets();}); 
 var express = require('express');
 var router = express.Router();
 
