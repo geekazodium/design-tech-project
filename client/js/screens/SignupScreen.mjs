@@ -20,7 +20,7 @@ class SignupScreen extends MenuScreen{
 
         this.loginButton = this.createButton(0,75,150,"log in instead");
         this.loginButton.onclick = (event)=>{
-            client.setScreen(new LoginScreen(this.renderDispatcher));
+            client.setScreen(new LoginScreen(this.renderDispatcher,this.parent));
         }
         this.loginButton.style.fontSize = "15px";
 

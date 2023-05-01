@@ -7,6 +7,7 @@ class RenderDispatcher{
     constructor(canvas,camera){
         this.rebuildTimer = 0;
         this.init = false;
+        this.preRender = ()=>{};
         this.canvas = canvas;
         if(!this.updateCanvasContext()){
             return;
@@ -54,6 +55,7 @@ class RenderDispatcher{
         });
     }
     render(timeStamp){
+        this.preRender();
         this.camera.update();
         this.renderContext.update(this.canvas,this.camera);
         this.renderers.forEach((renderer)=>{

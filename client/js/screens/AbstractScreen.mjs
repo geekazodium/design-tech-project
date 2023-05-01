@@ -13,6 +13,9 @@ class AbstractScreen{
     onExit(){
 
     }
+    onAnimationFrame(){
+        
+    }
 }
 
 export {AbstractScreen};

@@ -9,6 +9,8 @@ import { RequestConnectionC2SPacket } from "/common/C2S/RequestConnectionC2SPack
 import { RegisterAccountC2SPacket } from "../../common/C2S/RegisterAccountC2SPacket.mjs";
 import { LoginScreen } from "./screens/LoginScreen.mjs";
 import { IngameScreen } from "./screens/IngameScreen.mjs";
+import { HomeScreen } from "./screens/HomeScreen.mjs";
+import { initMenuKeybinds } from "./screens/MenuScreen.mjs";
 
 class GameClient{
     main(){
@@ -19,11 +21,16 @@ class GameClient{
         this.buttonInputHandler = new ButtonHandler();
 		this.camera = new Camera(this.displaySurface,this.mouseInputHandler);
         this.renderDispatcher = new RenderDispatcher(this.displaySurface,this.camera);
+        this.renderDispatcher.preRender = ()=>{
+            if(this.screen === undefined)return;
+            this.screen.onAnimationFrame();
+        }
         if(!this.renderDispatcher.init){
             stop();
             return;
         }
-        this.setScreen(new LoginScreen(this.renderDispatcher));
+        initMenuKeybinds();
+        this.setScreen(new HomeScreen(this.renderDispatcher));
         this.initKeybinds();
         this.loop = setInterval(()=>{this.tick();},10);
         document.body.style.visibility = "visible";

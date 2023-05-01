@@ -1,9 +1,26 @@
 import { client } from "../ClientMain.mjs";
+import { Keybind } from "../Keybind.mjs";
 import { RenderDispatcher } from "../RenderDispatcher.mjs";
 import { AbstractScreen } from "./AbstractScreen.mjs";
 import { IngameScreen } from "./IngameScreen.mjs";
 
+var escapeKeybind;
+function initMenuKeybinds(){
+    escapeKeybind = new Keybind("Escape");
+    client.buttonInputHandler.registerKeybind(escapeKeybind);
+}
+
 class MenuScreen extends AbstractScreen{
+    constructor(renderDispatcher,parent){
+        super(renderDispatcher);
+        this.parent = parent;
+    }
+    onAnimationFrame(){
+        if(escapeKeybind.wasPressed()){
+            if(this.parent === undefined)return;
+            client.setScreen(this.parent);
+        }
+    }
     onSet(){
         this.renderDispatcher.initRenderers([]);
         client.mouseInputHandler.canLock = false;
@@ -103,4 +120,4 @@ class MenuScreen extends AbstractScreen{
     }
 }
 
-export {MenuScreen};
+export {MenuScreen,escapeKeybind,initMenuKeybinds};

@@ -36,18 +36,18 @@ class Packets{
         packet.read(buffer);
         this.notifyListeners(packet,packetContainer);
     }
-    recieveServer(buffer,res){
+    recieveServer(buffer,res,req){
         var packetId = buffer[0];
         var packetContainer = this.packetMap.get(packetId);
         var packetClass = packetContainer.class;
         if(packetClass == undefined)return;
         var packet = new packetClass();
         packet.read(buffer);
-        this.notifyListeners(packet,packetContainer,res);
+        this.notifyListeners(packet,packetContainer,res,req);
     }
-    notifyListeners(packet,container,res){
+    notifyListeners(packet,container,res,req){
         container.listeners.forEach((callback)=>{
-            callback(packet,res);
+            callback(packet,res,req);
         });
     }
 }
