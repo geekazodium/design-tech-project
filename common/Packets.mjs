@@ -36,9 +36,6 @@ class Packets{
         packet.read(buffer);
         this.notifyListeners(packet,packetContainer);
     }
-    decodeReqBuffer(){
-        return 
-    }
     recieveServer(buffer,res,req){
         var packetId = buffer[0];
         var packetContainer = this.packetMap.get(packetId);
