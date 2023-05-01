@@ -50,26 +50,34 @@ class GameClient{
      * @param {String} username 
      * @param {String} password 
      */
-    registerAccount(username,password){
-        var packet = new RegisterAccountC2SPacket();
-        packet.setUserName(username);
-        packet.setPassword(password);
-        this.clientPacketHandler.sendClient(packet);
-        packet = new RequestConnectionC2SPacket();
-        packet.setUserName(username);
-        packet.setPassword(password);
-        this.clientPacketHandler.sendClient(packet);
+    async registerAccount(username,password){
+        try{
+            var packet = new RegisterAccountC2SPacket();
+            packet.setUserName(username);
+            packet.setPassword(password);
+            var bytes = await this.clientPacketHandler.sendClient(packet);
+            if(bytes[0] == 115) return await this.login(username,password);
+            else throw new Error("failed to create account");
+        }catch(err){
+            return err;
+        }
     }
     /**
      * 
      * @param {String} username 
      * @param {String} password 
      */
-    login(username,password){
-        var packet = new RequestConnectionC2SPacket();
-        packet.setUserName(username);
-        packet.setPassword(password);
-        this.clientPacketHandler.sendClient(packet);
+    async login(username,password){
+        try{
+            var packet = new RequestConnectionC2SPacket();
+            packet.setUserName(username);
+            packet.setPassword(password);
+            var bytes = await this.clientPacketHandler.sendClient(packet);
+            if(bytes[0] == 115) return "success!";
+            else throw new Error("failed to log in");
+        }catch(err){
+            return err;
+        }
     }
     /**
      * @description SLOPPY CODE TO GET CAMERA MOVEMENT WORKING,

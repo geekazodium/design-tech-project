@@ -12,6 +12,7 @@ exports.authHelper = authHelper;
 var app = express();
 
 var protocolRouter = require("./routes/protocol");
+var docsRouter = require("./routes/docs");
 var commonRouter = require("./routes/common");
 var usersRouter = require('./routes/users');
 
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname,"../client")));
 
 app.use('/game', protocolRouter);
 app.use('/common', commonRouter);
+app.use('/docs', docsRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

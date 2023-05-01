@@ -29,18 +29,25 @@ class SignupScreen extends MenuScreen{
         this.styleAsTitle(this.signupStatus,100);
         this.signupStatus.style.fontSize = "18px";
         this.signupStatus.style.color = "#ff0000ff";
+        this.signupStatus.innerHTML = "DO NOT REUSE PASSWORDS<br>FROM OTHER ACCOUNTS<br><a href=\"/docs/security\">learn more</a>";
 
         this.signupButton = this.createButton(0,30,150,"sign up");
-        this.signupButton.onclick = (event)=>{
+        this.signupButton.onclick = async (event)=>{
             if(this.usernameInvalid(this.usernameInput.value)){
                 this.signupStatus.innerText = "invalid username";
                 return;
             }
-            if(this.passwordInput.value.length<8)return;
-            if(this.passwordInput.value != this.verifyInput.value){
+            if(this.passwordInput.value.length<8){
+                this.signupStatus.innerText = "password must be 8 or more charcters in length";
                 return;
             }
-            client.registerAccount(this.usernameInput.value,this.passwordInput.value);
+            if(this.passwordInput.value != this.verifyInput.value){
+                this.signupStatus.innerText = "the passwords don't match";
+                return;
+            }
+            this.signupStatus.innerText = "contacting server...";
+            var success = await client.registerAccount(this.usernameInput.value,this.passwordInput.value);
+            this.signupStatus.innerText = success;
         };
         
         this.usernameInput = this.createField(0,-80,150,"username");

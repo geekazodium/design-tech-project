@@ -31,12 +31,14 @@ class LoginScreen extends MenuScreen{
         this.loginStatus.style.color = "#ff0000ff";
 
         this.loginButton = this.createButton(0,20,150,"log in");
-        this.loginButton.onclick = (event)=>{
+        this.loginButton.onclick = async (event)=>{
             if(this.usernameInvalid(this.usernameInput.value)){
                 this.loginStatus.innerText = "invalid username";
                 return;
             }
-            client.login(this.usernameInput.value,this.passwordInput.value);
+            this.loginStatus.innerText = "contacting server...";
+            var success = await client.login(this.usernameInput.value,this.passwordInput.value);
+            this.loginStatus.innerText = success;
         };
         
         this.usernameInput = this.createField(0,-55,150,"username");

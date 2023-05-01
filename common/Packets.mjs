@@ -17,15 +17,12 @@ class Packets{
     getBuffer(packet){
         return new Uint8Array([packet.id].concat(packet.write()));
     }
-    sendClient(packet) {
-        fetch('./game/', {
+    async sendClient(packet) {
+        const res = await fetch('./game/', {
             method: "PUT",
             body: this.getBuffer(packet)
-        })
-        .then(res => {
-            return res.body.getReader().read();
-        }).then(bytes => console.log(bytes))
-        .catch(err => alert(err));
+        });
+        return (await res.body.getReader().read()).value;
     }
     sendServer(packet,res) {
         res.send(this.getBuffer(packet));
