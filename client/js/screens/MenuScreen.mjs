@@ -53,10 +53,10 @@ class MenuScreen extends AbstractScreen{
      * suffering that is the actual stylesheet
      * @param {HTMLElement} element the html element to style
      */
-    styleAsTitle(element){ 
+    styleAsTitle(element,maxY){ 
         element.style.fontFamily = "math";
         element.style.fontSize = "40px"
-        element.style.top = "calc(50vh - 120px)";
+        element.style.top = "calc(50vh + "+maxY+"px)";
         element.style.left = "calc(50vw - 300px)";
         element.style.width = "600px";
         element.style.textAlign = "center";
@@ -94,6 +94,12 @@ class MenuScreen extends AbstractScreen{
         element.style.fontSize = "20px"
         element.style.textAlign = "left";
         element.style.width = "calc(100% - 8px)";
+    }
+    usernameInvalid(usernameInput){
+        return (
+            usernameInput.length<3||
+            usernameInput.length>16
+        );
     }
 }
 

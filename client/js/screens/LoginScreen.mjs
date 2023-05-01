@@ -16,20 +16,31 @@ class LoginScreen extends MenuScreen{
         this.title = document.createElement("h1");
         this.div.append(this.title);
         this.title.innerText = "ThisThingy";
-        this.styleAsTitle(this.title);
+        this.styleAsTitle(this.title,-125);
 
-        this.signupButton = this.createButton(0,135,100,"sign up instead");
+        this.signupButton = this.createButton(0,65,150,"sign up instead");
         this.signupButton.onclick = (event)=>{
             client.setScreen(new SignupScreen(this.renderDispatcher));
         }
+        this.signupButton.style.fontSize = "15px";
 
-        this.loginButton = this.createButton(0,50,100,"log in");
+        this.loginStatus = document.createElement("p1");
+        this.div.append(this.loginStatus);
+        this.styleAsTitle(this.loginStatus,90);
+        this.loginStatus.style.fontSize = "18px";
+        this.loginStatus.style.color = "#ff0000ff";
+
+        this.loginButton = this.createButton(0,20,150,"log in");
         this.loginButton.onclick = (event)=>{
+            if(this.usernameInvalid(this.usernameInput.value)){
+                this.loginStatus.innerText = "invalid username";
+                return;
+            }
             client.login(this.usernameInput.value,this.passwordInput.value);
         };
         
-        this.usernameInput = this.createField(0,-35,150,"username");
-        this.passwordInput = this.createField(0,0,150,"password");
+        this.usernameInput = this.createField(0,-55,150,"username");
+        this.passwordInput = this.createField(0,-20,150,"password");
     }
 }
 

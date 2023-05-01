@@ -16,7 +16,6 @@ class AuthHelper{
         var salt = this.encodeToHex(this._crypto_.randomBytes(66));
         var hash = sha256(password.concat(salt));
         this.users.set(user,{"salt": salt,"hash": hash});
-        console.log(this.users);
         return true;
     }
     login(user,password){
