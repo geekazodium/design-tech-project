@@ -54,8 +54,8 @@ async function registerServerListeners(){
         res.send("failed");
     });
 }
-var maxWait = 100;
-var maxSize = 128;
+const maxWait = 100;
+const maxSize = 128;
 
 var keys;
 router.get('/', function(req, res, next) {
@@ -74,10 +74,7 @@ async function readReqBuffer(req,ignoreMaxSize){
 
 router.get('/CookieAuth', async function(req, res, next) {
     var cookies = new Cookies(req, res, { keys: keys });
-
     var sessionCookie = cookies.get(authHelper.sessionCookieId, { signed: true });
-    
-    console.log(sessionCookie);
     var user = authHelper.getUser(sessionCookie);
     if(user === undefined){   
         cookies.set(
@@ -89,6 +86,46 @@ router.get('/CookieAuth', async function(req, res, next) {
     res.send(user);
 });
 
+router.put('/Login',async function(req, res){
+    var buffer = readReqBuffer(req);
+    //read packet
+    var buf = [[]];
+    var c = 0;
+    for(let i = 1;i<buffer.length;i++){
+        let byte = buffer[i];
+        if(byte == 0){
+            buf.push([]);
+            c++;
+            continue;
+        }
+        buf[c].push(byte);
+    }
+    var username = textDecoder.decode(Buffer.from(buf[0]));
+    var password = textDecoder.decode(Buffer.from(buf[1]));
+
+    if(authHelper.login(username,password)){
+        var cookies = new Cookies(req, res, { keys: keys });
+
+        var sessionCookie = cookies.get(authHelper.sessionCookieId, { signed: true });
+
+        if(sessionCookie !== undefined){
+            authHelper.invalidateCookie(sessionCookie);
+        }
+
+        cookies.set(
+            authHelper.sessionCookieId, 
+            authHelper.createSessionCookie(packet.username), 
+            { signed: true }
+        );
+
+        authHelper.getUser(sessionCookie);
+
+        res.send("success");
+        return;
+    }
+    res.send("failed");
+});
+
 router.put('/',async function(req, res, next){
     var waitTime = 0;
     while(!req.complete){
@@ -96,11 +133,12 @@ router.put('/',async function(req, res, next){
         waitTime++;
         if(waitTime>maxWait)return;
     }
-    
     var buffer = req.read();
     if(!buffer)return;
     packets.recieveServer(buffer,res,req);
 });
 
 module.exports = router;
+module.exports.maxWait = maxWait;
+module.exports.maxSize = maxSize;
 registerServerListeners();
