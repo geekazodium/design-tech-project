@@ -28,13 +28,7 @@ class LoginAccountRequestHandler extends RequestHandler{
         if(bytes[0] == 115) return "success!";
         else throw new Error("failed to log in");
     }
-    resolveAfter(time) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, time);
-        });
-    }
+    //@ClientIgnoreStart
     async recieve(req,res,next,params){
         var args = await this.readArgs(req);
         if(args == undefined)return;
@@ -64,6 +58,7 @@ class LoginAccountRequestHandler extends RequestHandler{
         }
         res.send("failed");
     }
+    //@ClientIgnoreEnd
 }
 
 const loginAccountRequestHandler = new LoginAccountRequestHandler();

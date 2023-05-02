@@ -28,13 +28,7 @@ class SignupAccountRequestHandler extends RequestHandler{
         if(bytes[0] == 115) return "success!";
         else throw new Error("failed to create account");
     }
-    resolveAfter(time) {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, time);
-        });
-    }
+    //@ClientIgnoreStart
     async recieve(req,res,next,params){
         var args = await this.readArgs(req);
         if(args == undefined)return;
@@ -48,6 +42,7 @@ class SignupAccountRequestHandler extends RequestHandler{
         }
         res.send("failed");
     }
+    //@ClientIgnoreEnd
 }
 
 const signupAccountRequestHandler = new SignupAccountRequestHandler();

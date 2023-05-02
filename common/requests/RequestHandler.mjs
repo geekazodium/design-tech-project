@@ -43,6 +43,7 @@ class RequestHandler{
             }, time);
         });
     }
+    //@ClientIgnoreStart
     async readReqBuffer(req,ignoreMaxSize){
         var waitTime = 0;
         while(!req.complete){
@@ -51,6 +52,31 @@ class RequestHandler{
             if(waitTime>maxWait)return;
         }
         return req.read(ignoreMaxSize?undefined:maxSize);
+    }
+    resolveAfter(time) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, time);
+        });
+    }
+    async readArgsFl(req){
+        var buffer = await this.readReqBuffer(req);
+        if(buffer == undefined)return undefined;
+        var buf = [];
+        var currentArg = -1;
+        var currentArgLeft = 0;
+        for(let i = 0;i<buffer.length;i++){
+            let byte = buffer[i];
+            if(currentArgLeft == 0){
+                currentArgLeft = byte;
+                currentArg ++;
+                buf.push([]);
+                continue;
+            }
+            buf[currentArg].push(byte);
+        }
+        return buf;
     }
     async readArgs(req){
         var buffer = await this.readReqBuffer(req);
@@ -75,6 +101,7 @@ class RequestHandler{
             this.recieve(req,res,next,params)
         })
     }
+    //@ClientIgnoreEnd
 }
 
 export {RequestHandler};
