@@ -42,7 +42,7 @@ class SignupAccountRequestHandler extends RequestHandler{
         var password = textDecoder.decode(Buffer.from(args[1]));
         var authHelper = params.authHelper;
 
-        if(authHelper.signUp(packet.username,packet.password)){
+        if(authHelper.signUp(username,password)){
             res.send("success");
             return;
         }

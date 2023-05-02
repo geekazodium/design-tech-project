@@ -4,10 +4,6 @@ import { Camera } from "./render/Camera.mjs";
 import { Keybind } from "./Keybind.mjs";
 import { MouseInputHandler } from "./MouseInputHandler.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";
-import { Packets } from "../../common/Packets.mjs";
-import { RegisterAccountC2SPacket } from "../../common/C2S/RegisterAccountC2SPacket.mjs";
-import { LoginScreen } from "./screens/LoginScreen.mjs";
-import { IngameScreen } from "./screens/IngameScreen.mjs";
 import { LoginAccountRequest, loginAccountRequestHandler } from "../../common/requests/LoginRequest.mjs";
 import { HomeScreen } from "./screens/HomeScreen.mjs";
 import { initMenuKeybinds } from "./screens/MenuScreen.mjs";
@@ -16,7 +12,6 @@ import { SignupAccountRequest, signupAccountRequestHandler } from "../../common/
 class GameClient{
     main(){
         this.screen = undefined;
-        this.clientPacketHandler = new Packets();
         this.displaySurface = document.getElementById("main-interface");
         this.mouseInputHandler = new MouseInputHandler(this.displaySurface);
         this.buttonInputHandler = new ButtonHandler();

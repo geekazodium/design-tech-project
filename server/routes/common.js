@@ -25,13 +25,10 @@ function loadFile(fileName){
         commons.set(fileName,filtered.join("\n"));
     });
 }
-loadFile("/Packets.mjs");
-loadFile("/Packet.mjs");
-loadFile("/C2S/RequestConnectionC2SPacket.mjs");
 loadFile("/requests/LoginRequest.mjs");
 loadFile("/requests/RequestHandler.mjs");
+loadFile("/requests/SignupRequest.mjs");
 loadFile("/SHA-256.mjs");
-loadFile("/C2S/RegisterAccountC2SPacket.mjs");
 loadFile("/BigInteger.js");
 
 router.get('/*', function(req, res, next) {
