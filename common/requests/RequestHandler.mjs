@@ -2,7 +2,7 @@
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();
 const maxWait = 100;
-const maxSize = 128;
+const maxSize = 256;
 
 class RequestHandler{
     getPath(){
@@ -20,6 +20,9 @@ class RequestHandler{
     async send(packet){
         try{
             var buffer = this.createBuffer(packet);
+            if(buffer.length>255){
+                throw new Error("packet buffer too long");
+            }
             var bytes = await this.putRequest(buffer,this.getPath());
             return await this.onResponse(bytes);
         }catch(err){
