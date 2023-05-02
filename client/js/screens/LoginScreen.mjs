@@ -39,6 +39,9 @@ class LoginScreen extends MenuScreen{
             this.loginStatus.innerText = "contacting server...";
             var success = await client.login(this.usernameInput.value,this.passwordInput.value);
             this.loginStatus.innerText = success;
+            if(success == "success!"){
+                client.setScreen(new IngameScreen(client.getScreenParams()));
+            }
         };
         
         this.usernameInput = this.createField(0,-55,150,"username");

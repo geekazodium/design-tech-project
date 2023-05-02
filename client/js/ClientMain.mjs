@@ -5,12 +5,13 @@ import { Keybind } from "./Keybind.mjs";
 import { MouseInputHandler } from "./MouseInputHandler.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";
 import { Packets } from "../../common/Packets.mjs";
-import { RequestConnectionC2SPacket } from "/common/C2S/RequestConnectionC2SPacket.mjs";
 import { RegisterAccountC2SPacket } from "../../common/C2S/RegisterAccountC2SPacket.mjs";
 import { LoginScreen } from "./screens/LoginScreen.mjs";
 import { IngameScreen } from "./screens/IngameScreen.mjs";
+import { LoginAccountRequest, loginAccountRequestHandler } from "../../common/requests/LoginRequest.mjs";
 import { HomeScreen } from "./screens/HomeScreen.mjs";
 import { initMenuKeybinds } from "./screens/MenuScreen.mjs";
+import { SignupAccountRequest, signupAccountRequestHandler } from "../../common/requests/SignupRequest.mjs";
 
 class GameClient{
     main(){
@@ -58,16 +59,7 @@ class GameClient{
      * @param {String} password 
      */
     async registerAccount(username,password){
-        try{
-            var packet = new RegisterAccountC2SPacket();
-            packet.setUserName(username);
-            packet.setPassword(password);
-            var bytes = await this.clientPacketHandler.sendClient(packet);
-            if(bytes[0] == 115) return await this.login(username,password);
-            else throw new Error("failed to create account");
-        }catch(err){
-            return err;
-        }
+        return await signupAccountRequestHandler.send(new SignupAccountRequest(username,password));
     }
     /**
      * 
@@ -75,16 +67,15 @@ class GameClient{
      * @param {String} password 
      */
     async login(username,password){
-        try{
-            var packet = new RequestConnectionC2SPacket();
-            packet.setUserName(username);
-            packet.setPassword(password);
-            var bytes = await this.clientPacketHandler.sendClient(packet);
-            if(bytes[0] == 115) return "success!";
-            else throw new Error("failed to log in");
-        }catch(err){
-            return err;
-        }
+        return await loginAccountRequestHandler.send(new LoginAccountRequest(username,password));
+    }
+    async putRequest(buffer,path){
+        console.log(buffer);
+        const res = await fetch('./game'+path, {
+            method: "PUT",
+            body: new Uint8Array(buffer)
+        });
+        return (await res.body.getReader().read()).value;
     }
     /**
      * @description SLOPPY CODE TO GET CAMERA MOVEMENT WORKING,

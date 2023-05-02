@@ -3,13 +3,14 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var Game = require("./Game").Game;
 
 const { AuthHelper } = require('./AuthHandler');
 
 const authHelper = new AuthHelper();
 exports.authHelper = authHelper;
 var app = express();
+
+var Game = require("./Game").Game;
 
 var protocolRouter = require("./routes/protocol");
 var docsRouter = require("./routes/docs");

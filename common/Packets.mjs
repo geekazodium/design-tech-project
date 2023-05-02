@@ -1,5 +1,6 @@
 import { RegisterAccountC2SPacket } from "./C2S/RegisterAccountC2SPacket.mjs";
 import { RequestConnectionC2SPacket } from "./C2S/RequestConnectionC2SPacket.mjs";
+import { Packet } from "./Packet.mjs";
 
 class Packets{
     constructor(){
@@ -17,6 +18,11 @@ class Packets{
     getBuffer(packet){
         return new Uint8Array([packet.id].concat(packet.write()));
     }
+    /**
+     * @deprecated reworking networking protocol
+     * @param {Packet} packet 
+     * @returns 
+     */
     async sendClient(packet) {
         const res = await fetch('./game/', {
             method: "PUT",
