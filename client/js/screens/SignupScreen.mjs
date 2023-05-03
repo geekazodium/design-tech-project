@@ -46,7 +46,7 @@ class SignupScreen extends MenuScreen{
                 return;
             }
             this.signupStatus.innerText = "contacting server...";
-            var success = await client.registerAccount(this.usernameInput.value,this.passwordInput.value);
+            var success = await client.authHelper.registerAccount(this.usernameInput.value,this.passwordInput.value);
             this.signupStatus.innerText = success;
         };
         

@@ -51,8 +51,6 @@ class LoginAccountRequestHandler extends RequestHandler{
                 { signed: true }
             );
 
-            authHelper.getUser(sessionCookie);
-
             res.send("success");
             return;
         }

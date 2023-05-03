@@ -37,6 +37,20 @@ class SignupAccountRequestHandler extends RequestHandler{
         var authHelper = params.authHelper;
 
         if(authHelper.signUp(username,password)){
+            var cookies = new Cookies(req, res, { keys: params.keys });
+
+            var sessionCookie = cookies.get(authHelper.sessionCookieId, { signed: true });
+
+            if(sessionCookie !== undefined){
+                authHelper.invalidateCookie(sessionCookie);
+            }
+
+            cookies.set(
+                authHelper.sessionCookieId, 
+                authHelper.createSessionCookie(username), 
+                { signed: true }
+            );
+            
             res.send("success");
             return;
         }

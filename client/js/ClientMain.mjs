@@ -4,14 +4,14 @@ import { Camera } from "./render/Camera.mjs";
 import { Keybind } from "./Keybind.mjs";
 import { MouseInputHandler } from "./MouseInputHandler.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";
-import { LoginAccountRequest, loginAccountRequestHandler } from "../../common/requests/LoginRequest.mjs";
 import { HomeScreen } from "./screens/HomeScreen.mjs";
 import { initMenuKeybinds } from "./screens/MenuScreen.mjs";
-import { SignupAccountRequest, signupAccountRequestHandler } from "../../common/requests/SignupRequest.mjs";
+import { AuthHelper } from "./AuthHelper.mjs";
 
 class GameClient{
     main(){
         this.screen = undefined;
+        this.authHelper = new AuthHelper();
         this.displaySurface = document.getElementById("main-interface");
         this.mouseInputHandler = new MouseInputHandler(this.displaySurface);
         this.buttonInputHandler = new ButtonHandler();
@@ -25,6 +25,7 @@ class GameClient{
             stop();
             return;
         }
+        this.authHelper.getAccountInfo("help");
         initMenuKeybinds();
         this.setScreen(new HomeScreen(this.renderDispatcher));
         this.initKeybinds();
@@ -47,30 +48,6 @@ class GameClient{
     }
     getAssetLoader(){
         return assetLoader;
-    }
-    /**
-     * 
-     * @param {String} username 
-     * @param {String} password 
-     */
-    async registerAccount(username,password){
-        return await signupAccountRequestHandler.send(new SignupAccountRequest(username,password));
-    }
-    /**
-     * 
-     * @param {String} username 
-     * @param {String} password 
-     */
-    async login(username,password){
-        return await loginAccountRequestHandler.send(new LoginAccountRequest(username,password));
-    }
-    async putRequest(buffer,path){
-        console.log(buffer);
-        const res = await fetch('./game'+path, {
-            method: "PUT",
-            body: new Uint8Array(buffer)
-        });
-        return (await res.body.getReader().read()).value;
     }
     /**
      * @description SLOPPY CODE TO GET CAMERA MOVEMENT WORKING,

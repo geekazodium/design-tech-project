@@ -37,7 +37,7 @@ class LoginScreen extends MenuScreen{
                 return;
             }
             this.loginStatus.innerText = "contacting server...";
-            var success = await client.login(this.usernameInput.value,this.passwordInput.value);
+            var success = await client.authHelper.login(this.usernameInput.value,this.passwordInput.value);
             this.loginStatus.innerText = success;
             if(success == "success!"){
                 client.setScreen(new IngameScreen(client.getScreenParams()));

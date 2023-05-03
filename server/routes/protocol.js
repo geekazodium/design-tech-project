@@ -22,16 +22,15 @@ router.get('/CookieAuth', async function(req, res, next) {
     var cookies = new Cookies(req, res, { keys: keys });
     var sessionCookie = cookies.get(authHelper.sessionCookieId, { signed: true });
     var user = authHelper.getUser(sessionCookie);
-    if(user === undefined){   
-        cookies.set(
-            authHelper.sessionCookieId, 
-            "", 
-            { signed: true }
-        );
+    if(user === undefined){
+        authHelper.clearCookie(cookies);
     }
     res.send(user);
 });
 
+import("../../common/requests/AccountInfoRequest.mjs").then(
+    module => {module.accountInfoRequestHandler.listen(router,{"keys":keys,"authHelper":authHelper});}
+)
 import("../../common/requests/LoginRequest.mjs").then(
     (module)=>{module.loginAccountRequestHandler.listen(router,{"keys":keys,"authHelper":authHelper});}
 );

@@ -1,3 +1,4 @@
+
 var sha256;
 import("../common/SHA-256.mjs").then((module)=>{sha256 = module.sha256;}); 
 
@@ -13,11 +14,16 @@ class AuthHelper{
             });
         }
     }
+    getUserData(user){
+        var ret = this.users.get(user);
+        if(ret === undefined)return undefined;
+        return ret.data;
+    }
     signUp(user,password){
         if(this.users.has(user))return false;
         var salt = this.encodeToB64(this._crypto_.randomBytes(66));
         var hash = sha256(password.concat(salt));
-        this.users.set(user,{"salt": salt,"hash": hash});
+        this.users.set(user,{"salt": salt,"hash": hash,"data":{"getHelp":"getHelp"}});
         return true;
     }
     login(user,password){
@@ -31,6 +37,13 @@ class AuthHelper{
     }
     invalidateCookie(cookie){
         this.sessions.delete(cookie);
+    }
+    clearCookie(cookies){
+        cookies.set(
+            this.sessionCookieId, 
+            "", 
+            { signed: true }
+        );
     }
     createSessionCookie(user){
         var cookie;

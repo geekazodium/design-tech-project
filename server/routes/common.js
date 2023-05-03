@@ -28,6 +28,7 @@ function loadFile(fileName){
 loadFile("/requests/LoginRequest.mjs");
 loadFile("/requests/RequestHandler.mjs");
 loadFile("/requests/SignupRequest.mjs");
+loadFile("/requests/AccountInfoRequest.mjs");
 loadFile("/SHA-256.mjs");
 loadFile("/BigInteger.js");
 

@@ -98,7 +98,7 @@ class RequestHandler{
     }
     listen(router,params){
         router.put(this.getPath(),(req,res,next)=>{
-            this.recieve(req,res,next,params)
+            this.recieve(req,res,next,params);
         })
     }
     //@ClientIgnoreEnd

@@ -13,14 +13,34 @@ class HomeScreen extends MenuScreen{
 
         this.title = document.createElement("h1");
         this.div.append(this.title);
-        this.title.innerText = "ThisThingy";
+        this.title.innerText = "Test Title";
         this.styleAsTitle(this.title,-125);
 
-        this.loginButton = this.createButton(0,20,150,"have an account? log in!");
-        this.loginButton.style.fontSize = "20px";
-        this.loginButton.onclick = (event)=>{
-            client.setScreen(new LoginScreen(this.renderDispatcher,this))
+        this.accountButton = this.createButton(0,20,150,"have an account? log in!");
+
+        this.accountButton.style.fontSize = "20px";
+        this.toLoginScreen = (event)=>{
+            client.setScreen(new LoginScreen(this.renderDispatcher,this));
         };
+        this.signOut = (event)=>{
+            
+        };
+        this.lastClientAccount = undefined;
+        this.accountButton.onclick = this.toLoginScreen;
+    }
+    setToSignedIn(){
+        this.accountButton.onclick = this.signOut;
+    }
+    setToSignedOut(){
+        this.accountButton.onclick = this.toLoginScreen;
+    }
+    onAnimationFrame(){
+        super.onAnimationFrame();
+        if(this.lastClientAccount === client.account){
+            return;
+        }
+        if(client.account === undefined)this.setToSignedOut();
+        else this.setToSignedIn();
     }
 }
 
