@@ -17,25 +17,42 @@ class TerrainBufferBuilder extends BufferBuilder{
     }
     async rebuild(gl){
         super.rebuild();
-        var tempVBO = [];
-        var tempIBO = [];
+        var tempVBOs = [[]];
+        var tempIBOs = [[]];
 
         for (let chunkX = 0; chunkX < 8; chunkX++) {
             for(let chunkZ = 0; chunkZ < 8; chunkZ++){
                 var chunk = new Chunk(chunkX,chunkZ);
                 chunk.generate(chunkX,chunkZ);
-                this.addChunkBuffer(chunk,chunkX,chunkZ,tempVBO,tempIBO);
+                this.addChunkBuffer(chunk,chunkX,chunkZ,tempVBOs,tempIBOs);
             }
         }
+        this.bufferLengths = [];
+        tempIBOs.forEach(ibo=>{
+            this.bufferLengths.push(ibo.length);
+        });
+        while(tempVBOs.length>this.renderer.terrainVBOs.length){
+            this.renderer.appendBufferObjects(gl);
+        }
+        while(tempVBOs.length<this.renderer.terrainVBOs.length){
+            console.log("aaabb");
+            this.renderer.removeBufferObjects(gl);
+        }
+        for (let i = 0; i < tempVBOs.length; i++) {
+            const vboArray = tempVBOs[i];
+            const vertexBuffer = this.renderer.terrainVBOs[i];
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vboArray), gl.DYNAMIC_DRAW);
+        }
+        for (let i = 0; i < tempIBOs.length; i++) {
+            const iboArray = tempIBOs[i];
+            const indexBuffer = this.renderer.terrainIBOs[i];
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(iboArray), gl.DYNAMIC_DRAW);
+        }
 
-        this.bufferLength = tempIBO.length;
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tempVBO), gl.DYNAMIC_DRAW);
-
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.IBO);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tempIBO), gl.DYNAMIC_DRAW);
     }
-    addChunkBuffer(chunk,chunkX,chunkZ,tempVBO,tempIBO){
+    addChunkBuffer(chunk,chunkX,chunkZ,tempVBOs,tempIBOs){
         const vertical = 0b100000000;
         const forward = 0b1;
         const side = 0b10000;
@@ -55,6 +72,17 @@ class TerrainBufferBuilder extends BufferBuilder{
             const negZ_ = chunk.blocks[i-side];
             minX+=chunkX*16;
             minZ+=chunkZ*16;
+
+            var tempVBO = tempVBOs[tempVBOs.length-1];
+            var tempIBO = tempIBOs[tempIBOs.length-1];
+            if(tempVBO.length >= 64*64*32){
+                tempVBO = [];
+                tempVBOs.push(tempVBO);
+                tempIBO = [];
+                tempIBOs.push(tempIBO);
+                this.indexCounter = 0;
+            }
+
             if(above == 0){
                 var tex = this.texMap.getForBlock(block,posY);
                 this.createCubeFacePosY(tempVBO,tempIBO,minX,minY,minZ,tex[0],tex[1]);

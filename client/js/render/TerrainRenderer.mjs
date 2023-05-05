@@ -1,3 +1,4 @@
+import { forEach } from "../../libraries/esm/vec3.js";
 import { TerrainBufferBuilder } from "../TerrainBufferBuilder.mjs";
 import { Renderer } from "./Renderer.mjs";
 
@@ -93,6 +94,8 @@ void main(){
     gl_FragColor = texture2D(sampler, fragTexPosition);
 }`;
 
+const maxBufferSize = 64*64*64;
+
 class TerrainRenderer extends Renderer{
     constructor(gl){
         super(1,"terrain");
@@ -107,9 +110,11 @@ class TerrainRenderer extends Renderer{
         this.projectionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'mProjection');
         this.positionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'vPosition');
 
-        this.terrainVBO = gl.createBuffer();
-        this.terrainIBO = gl.createBuffer();
-        this.updateTerrainData(gl,BOX_VERTICES,BOX_INDICES);
+        // this.terrainVBO = gl.createBuffer();
+        // this.terrainIBO = gl.createBuffer();
+
+        this.terrainVBOs = new Array();
+        this.terrainIBOs = new Array();
 
         this.positionAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'vertPosition');
         this.textureAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'texPosition');
@@ -128,7 +133,27 @@ class TerrainRenderer extends Renderer{
 	    );
 	    gl.bindTexture(gl.TEXTURE_2D, null);
     }
-    createChunkVBO(gl){
+    /**
+     * 
+     * @param {WebGLRenderingContext} gl 
+     */
+    removeBufferObjects(gl){
+        var lastVBO = this.terrainVBOs.pop();
+        var lastIBO = this.terrainIBOs.pop();
+        gl.deleteBuffer(lastIBO);
+        gl.deleteBuffer(lastVBO);
+    }
+    /**
+     * 
+     * @param {WebGLRenderingContext} gl 
+     */
+    appendBufferObjects(gl){
+        var tempVBO = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER,tempVBO);
+        var tempIBO = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,tempIBO);
+        this.terrainIBOs.push(tempIBO);
+        this.terrainVBOs.push(tempVBO);
     }
     updateTerrainData(gl,VERTICES,INDICES){
         gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
@@ -165,30 +190,34 @@ class TerrainRenderer extends Renderer{
         gl.uniformMatrix4fv(this.projectionUniformLocation, gl.FALSE, renderContext.projMatrix);
         gl.uniform3fv(this.positionUniformLocation, renderContext.cameraInstance.position);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
-        gl.vertexAttribPointer(
-            this.positionAttribLocation,
-            3,
-            gl.FLOAT,
-            gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT,
-            0 
-        );
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
-        gl.vertexAttribPointer(
-            this.textureAttribLocation,
-            2,
-            gl.FLOAT,
-            gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT,
-            3 * Float32Array.BYTES_PER_ELEMENT
-        );
-
-
         gl.bindTexture(gl.TEXTURE_2D,this.terrainTexture);
         gl.activeTexture(gl.TEXTURE0);
-		gl.drawElements(gl.TRIANGLES, this.bufferBuilder.bufferLength, gl.UNSIGNED_SHORT, 0);
-        
+
+        for(let i = 0; i < this.terrainVBOs.length; i++){
+            const vbo = this.terrainVBOs[i];
+            const ibo = this.terrainIBOs[i];
+            const bufferLength = this.bufferBuilder.bufferLengths[i];
+            gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+            gl.vertexAttribPointer(
+                this.positionAttribLocation,
+                3,
+                gl.FLOAT,
+                gl.FALSE,
+                5 * Float32Array.BYTES_PER_ELEMENT,
+                0 
+            );
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+            gl.vertexAttribPointer(
+                this.textureAttribLocation,
+                2,
+                gl.FLOAT,
+                gl.FALSE,
+                5 * Float32Array.BYTES_PER_ELEMENT,
+                3 * Float32Array.BYTES_PER_ELEMENT
+            );
+		    gl.drawElements(gl.TRIANGLES, bufferLength, gl.UNSIGNED_SHORT, 0);
+        }
+
         gl.disableVertexAttribArray(this.positionAttribLocation);
 
         gl.disableVertexAttribArray(this.textureAttribLocation);
@@ -196,7 +225,7 @@ class TerrainRenderer extends Renderer{
     attachBufferBuilder(bufferBuilder){
         if(!(bufferBuilder instanceof TerrainBufferBuilder))return;
         this.bufferBuilder = bufferBuilder;
-        bufferBuilder.setBuildTo(this.terrainVBO,this.terrainIBO);
+        bufferBuilder.setBuildTo(this);
     }
 }
 
