@@ -128,6 +128,8 @@ class TerrainRenderer extends Renderer{
 	    );
 	    gl.bindTexture(gl.TEXTURE_2D, null);
     }
+    createChunkVBO(gl){
+    }
     updateTerrainData(gl,VERTICES,INDICES){
         gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(VERTICES), gl.DYNAMIC_DRAW);
@@ -147,7 +149,7 @@ class TerrainRenderer extends Renderer{
 
         this.terrainRenderProgram = this.linkProgram(gl,vertexShader,fragmentShader);
     }
-    render(gl,timestamp,renderContext){
+    render(gl,timestamp,renderContext,visibleChunks){
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
         gl.frontFace(gl.CCW);
@@ -172,6 +174,7 @@ class TerrainRenderer extends Renderer{
             5 * Float32Array.BYTES_PER_ELEMENT,
             0 
         );
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
         gl.vertexAttribPointer(
             this.textureAttribLocation,
             2,
@@ -181,7 +184,6 @@ class TerrainRenderer extends Renderer{
             3 * Float32Array.BYTES_PER_ELEMENT
         );
 
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
 
         gl.bindTexture(gl.TEXTURE_2D,this.terrainTexture);
         gl.activeTexture(gl.TEXTURE0);

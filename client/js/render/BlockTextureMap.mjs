@@ -14,7 +14,6 @@ class BlockTextureMap{
         this.atlas = atlas;
         this.width = this.atlas.texture.width;
         this.height = this.atlas.texture.height;
-        console.log(this.width,this.height);
     }
     getTextureName(block,face){
         if(block.type == "dir-none"){

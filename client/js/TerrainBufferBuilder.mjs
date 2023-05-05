@@ -20,10 +20,22 @@ class TerrainBufferBuilder extends BufferBuilder{
         var tempVBO = [];
         var tempIBO = [];
 
-        var chunkX = 0;
-        var chunkZ = 0;
-        var chunk = new Chunk(chunkX,chunkZ);
-        chunk.generate(chunkX,chunkZ);
+        for (let chunkX = 0; chunkX < 8; chunkX++) {
+            for(let chunkZ = 0; chunkZ < 8; chunkZ++){
+                var chunk = new Chunk(chunkX,chunkZ);
+                chunk.generate(chunkX,chunkZ);
+                this.addChunkBuffer(chunk,chunkX,chunkZ,tempVBO,tempIBO);
+            }
+        }
+
+        this.bufferLength = tempIBO.length;
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tempVBO), gl.DYNAMIC_DRAW);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.IBO);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tempIBO), gl.DYNAMIC_DRAW);
+    }
+    addChunkBuffer(chunk,chunkX,chunkZ,tempVBO,tempIBO){
         const vertical = 0b100000000;
         const forward = 0b1;
         const side = 0b10000;
@@ -32,17 +44,17 @@ class TerrainBufferBuilder extends BufferBuilder{
             if(block == 0){
                 continue;
             }
+            var minX = i&0b1111;
+            var minZ = (i&0b11110000)>>4;
+            var minY = (i&0b1111111100000000)>>8;
             const under = chunk.blocks[i-vertical];
             const above = chunk.blocks[i+vertical];
             const negX_ = chunk.blocks[i-forward];
             const posX_ = chunk.blocks[i+forward];
             const posZ_ = chunk.blocks[i+side];
             const negZ_ = chunk.blocks[i-side];
-            var minX = i&0b1111;
             minX+=chunkX*16;
-            var minZ = (i&0b11110000)>>4;
             minZ+=chunkZ*16;
-            var minY = (i&0b1111111100000000)>>8;
             if(above == 0){
                 var tex = this.texMap.getForBlock(block,posY);
                 this.createCubeFacePosY(tempVBO,tempIBO,minX,minY,minZ,tex[0],tex[1]);
@@ -68,13 +80,6 @@ class TerrainBufferBuilder extends BufferBuilder{
                 this.createCubeFacePosZ(tempVBO,tempIBO,minX,minY,minZ,tex[0],tex[1]);
             }
         }
-        
-        this.bufferLength = tempIBO.length;
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tempVBO), gl.DYNAMIC_DRAW);
-
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.IBO);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tempIBO), gl.DYNAMIC_DRAW);
     }
     createSurface(VBO,IBO,points){
         IBO.push(
