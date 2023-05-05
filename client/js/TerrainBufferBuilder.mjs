@@ -35,7 +35,6 @@ class TerrainBufferBuilder extends BufferBuilder{
             this.renderer.appendBufferObjects(gl);
         }
         while(tempVBOs.length<this.renderer.terrainVBOs.length){
-            console.log("aaabb");
             this.renderer.removeBufferObjects(gl);
         }
         for (let i = 0; i < tempVBOs.length; i++) {
