@@ -1,4 +1,5 @@
 import { client } from "../ClientMain.mjs";
+import { IngameScreen } from "./IngameScreen.mjs";
 import { LoginScreen } from "./LoginScreen.mjs";
 import { MenuScreen } from "./MenuScreen.mjs";
 import { SignupScreen } from "./SignupScreen.mjs";
@@ -16,12 +17,20 @@ class HomeScreen extends MenuScreen{
         this.title.innerText = "Test Title";
         this.styleAsTitle(this.title,-125);
 
+        this.testButton = this.createButton(0,-40,150,"Test Scene");
+
+        this.testButton.style.fontSize = "20px";
+        this.testButton.onclick = (event)=>{
+            client.setScreen(new IngameScreen(client.getScreenParams()));
+        };
+
         this.accountButton = this.createButton(0,20,150,"have an account? log in!");
 
         this.accountButton.style.fontSize = "20px";
         this.toLoginScreen = (event)=>{
             client.setScreen(new LoginScreen(this.renderDispatcher,this));
         };
+
         this.signOut = (event)=>{
             
         };

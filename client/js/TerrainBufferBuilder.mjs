@@ -1,28 +1,78 @@
+import { perlinNoise } from "../../common/PerlinNoise.mjs";
+import { min } from "../libraries/esm/vec3.js";
 import { BufferBuilder } from "./BufferBuilder.mjs";
+import { BlockTextureMap, negX, negY, negZ, posX, posY, posZ } from "./render/BlockTextureMap.mjs";
+import { TextureAtlas } from "./render/TextureAtlas.mjs";
+import { Chunk } from "./utils/World.mjs";
 
 class TerrainBufferBuilder extends BufferBuilder{
-    constructor(textureAtlas){
+    /**
+     * 
+     * @param {TextureAtlas} textureAtlas 
+     * @param {BlockTextureMap} texMap 
+     */
+    constructor(textureAtlas,texMap){
         super(textureAtlas);
-        this.FACE_NEG_X = 0;
-        this.FACE_POS_X = 1;
-        this.FACE_NEG_Y = 2;
-        this.FACE_POS_Y = 3;
-        this.FACE_NEG_Z = 4;
-        this.FACE_POS_Z = 5;
+        this.texMap = texMap;
     }
-    rebuild(gl){
+    async rebuild(gl){
         super.rebuild();
         var tempVBO = [];
         var tempIBO = [];
 
-        this.createCube(tempVBO,tempIBO,0,0,-2,[0,0],[1/8,1/8]);
-        this.createCube(tempVBO,tempIBO,1,0,-2,[1/8,0],[2/8,1/8]);
-        this.createCube(tempVBO,tempIBO,1,1,-2,[2/8,0],[3/8,1/8]);
-
+        var chunkX = 0;
+        var chunkZ = 0;
+        var chunk = new Chunk(chunkX,chunkZ);
+        chunk.generate(chunkX,chunkZ);
+        const vertical = 0b100000000;
+        const forward = 0b1;
+        const side = 0b10000;
+        for (let i = 0; i < chunk.blocks.length; i++) {
+            const block = chunk.blocks[i];
+            if(block == 0){
+                continue;
+            }
+            const under = chunk.blocks[i-vertical];
+            const above = chunk.blocks[i+vertical];
+            const negX_ = chunk.blocks[i-forward];
+            const posX_ = chunk.blocks[i+forward];
+            const posZ_ = chunk.blocks[i+side];
+            const negZ_ = chunk.blocks[i-side];
+            var minX = i&0b1111;
+            minX+=chunkX*16;
+            var minZ = (i&0b11110000)>>4;
+            minZ+=chunkZ*16;
+            var minY = (i&0b1111111100000000)>>8;
+            if(above == 0){
+                var tex = this.texMap.getForBlock(block,posY);
+                this.createCubeFacePosY(tempVBO,tempIBO,minX,minY,minZ,tex[0],tex[1]);
+            }
+            if(under == 0){
+                var tex = this.texMap.getForBlock(block,negY);
+                this.createCubeFaceNegY(tempVBO,tempIBO,minX,minY,minZ,tex[0],tex[1]);
+            }
+            if(negX_ == 0){
+                var tex = this.texMap.getForBlock(block,negX);
+                this.createCubeFaceNegX(tempVBO,tempIBO,minX,minY,minZ,tex[0],tex[1]);
+            }
+            if(posX_ == 0){
+                var tex = this.texMap.getForBlock(block,posX);
+                this.createCubeFacePosX(tempVBO,tempIBO,minX,minY,minZ,tex[0],tex[1]);
+            }
+            if(negZ_ == 0){
+                var tex = this.texMap.getForBlock(block,negZ);
+                this.createCubeFaceNegZ(tempVBO,tempIBO,minX,minY,minZ,tex[0],tex[1]);
+            }
+            if(posZ_ == 0){
+                var tex = this.texMap.getForBlock(block,posZ);
+                this.createCubeFacePosZ(tempVBO,tempIBO,minX,minY,minZ,tex[0],tex[1]);
+            }
+        }
+        
         this.bufferLength = tempIBO.length;
         gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(tempVBO), gl.DYNAMIC_DRAW);
- 
+
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.IBO);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tempIBO), gl.DYNAMIC_DRAW);
     }
@@ -36,97 +86,97 @@ class TerrainBufferBuilder extends BufferBuilder{
         });
         this.indexCounter += 4;
     }
-    createCubeFaceMPos(VBO,IBO,direction,minPos,uvStart,uvEnd){
-        return this.createCubeFaceMXYZ(VBO,IBO,direction,minPos[0],minPos[1],minPos[2],uvStart,uvEnd);
-    }
     createCube(VBO,IBO,minX,minY,minZ,uvMin,uvMax){
 
-        this.createCubeFaceMPos(VBO,IBO,this.FACE_POS_Y,[minX,minY+1,minZ],uvMin,uvMax);
+        this.createCubeFacePosY(VBO,IBO,minX,minY,minZ ,uvMin,uvMax);
 
-        this.createCubeFaceMPos(VBO,IBO,this.FACE_NEG_Y,[minX,minY,minZ],uvMin,uvMax);
+        this.createCubeFaceNegY(VBO,IBO,minX,minY,minZ,uvMin,uvMax);
 
-        this.createCubeFaceMPos(VBO,IBO,this.FACE_NEG_X,[minX,minY,minZ],uvMin,uvMax);
+        this.createCubeFacePosX(VBO,IBO,minX,minY,minZ,uvMin,uvMax);
 
-        this.createCubeFaceMPos(VBO,IBO,this.FACE_POS_X,[minX+1,minY,minZ],uvMin,uvMax);
+        this.createCubeFaceNegX(VBO,IBO,minX,minY,minZ,uvMin,uvMax);
 
-        this.createCubeFaceMPos(VBO,IBO,this.FACE_NEG_Z,[minX,minY,minZ+1],uvMin,uvMax);
+        this.createCubeFacePosZ(VBO,IBO,minX,minY,minZ,uvMin,uvMax);
 
-        this.createCubeFaceMPos(VBO,IBO,this.FACE_POS_Z,[minX,minY,minZ],uvMin,uvMax);
+        this.createCubeFaceNegZ(VBO,IBO,minX,minY,minZ,uvMin,uvMax);
     }
-    createCubeFaceMXYZ(VBO,IBO,direction,minX,minY,minZ,uvStart,uvEnd){
-        if(direction == this.FACE_POS_Y){
-            VBO.push(
-                minX, minY, minZ,       uvStart[0], uvStart[1],
-                minX, minY, minZ+1,     uvStart[0], uvEnd[1],
-                minX+1, minY, minZ+1,   uvEnd[0], uvEnd[1],
-                minX+1, minY, minZ,     uvEnd[0], uvStart[1]
-            );
-            IBO.push(
-                this.indexCounter+0, this.indexCounter+1, this.indexCounter+2,
-                this.indexCounter+0, this.indexCounter+2, this.indexCounter+3
-            );
-            this.indexCounter += 4;
-        }else if(direction == this.FACE_NEG_Y){
-            VBO.push(
-                minX, minY, minZ,       uvStart[0], uvStart[1],
-                minX, minY, minZ+1,     uvStart[0], uvEnd[1],
-                minX+1, minY, minZ+1,   uvEnd[0], uvEnd[1],
-                minX+1, minY, minZ,     uvEnd[0], uvStart[1]
-            );
-            IBO.push(
-                this.indexCounter+1, this.indexCounter+0, this.indexCounter+2,
-                this.indexCounter+2, this.indexCounter+0, this.indexCounter+3
-            );
-            this.indexCounter += 4;
-        }else if(direction == this.FACE_NEG_X){
-            VBO.push(
-                minX, minY+1, minZ+1,   uvEnd[0], uvStart[1],
-                minX, minY, minZ+1,     uvEnd[0], uvEnd[1],
-                minX, minY, minZ,       uvStart[0], uvEnd[1],
-                minX, minY+1, minZ,     uvStart[0], uvStart[1]
-            );
-            IBO.push(
-                this.indexCounter+1, this.indexCounter+0, this.indexCounter+2,
-                this.indexCounter+2, this.indexCounter+0, this.indexCounter+3
-            );
-            this.indexCounter += 4;
-        }else if(direction == this.FACE_POS_X){
-            VBO.push(
-                minX, minY+1, minZ+1,   uvStart[0], uvStart[1],
-                minX, minY, minZ+1,     uvStart[0], uvEnd[1],
-                minX, minY, minZ,       uvEnd[0], uvEnd[1],
-                minX, minY+1, minZ,     uvEnd[0], uvStart[1]
-            );
-            IBO.push(
-                this.indexCounter+0, this.indexCounter+1, this.indexCounter+2,
-                this.indexCounter+0, this.indexCounter+2, this.indexCounter+3
-            );
-            this.indexCounter += 4;
-        }else if(direction == this.FACE_NEG_Z){
-            VBO.push(
-                minX+1, minY+1, minZ,   uvEnd[0], uvStart[1],
-                minX+1, minY, minZ,     uvEnd[0], uvEnd[1],
-                minX, minY, minZ,       uvStart[0], uvEnd[1],
-                minX, minY+1, minZ,     uvStart[0], uvStart[1]
-            );
-            IBO.push(
-                this.indexCounter+1, this.indexCounter+0, this.indexCounter+2,
-                this.indexCounter+2, this.indexCounter+0, this.indexCounter+3
-            );
-            this.indexCounter += 4;
-        }else if(direction == this.FACE_POS_Z){
-            VBO.push(
-                minX+1, minY+1, minZ,   uvStart[0], uvStart[1],
-                minX+1, minY, minZ,     uvStart[0], uvEnd[1],
-                minX, minY, minZ,       uvEnd[0], uvEnd[1],
-                minX, minY+1, minZ,     uvEnd[0], uvStart[1]
-            );
-            IBO.push(
-                this.indexCounter+0, this.indexCounter+1, this.indexCounter+2,
-                this.indexCounter+0, this.indexCounter+2, this.indexCounter+3
-            );
-            this.indexCounter += 4;
-        }
+    createCubeFacePosY(VBO,IBO,minX,minY,minZ,uvStart,uvEnd){
+        VBO.push(
+            minX, minY+1, minZ,       uvStart[0], uvStart[1],
+            minX, minY+1, minZ+1,     uvStart[0], uvEnd[1],
+            minX+1, minY+1, minZ+1,   uvEnd[0], uvEnd[1],
+            minX+1, minY+1, minZ,     uvEnd[0], uvStart[1]
+        );
+        IBO.push(
+            this.indexCounter+0, this.indexCounter+1, this.indexCounter+2,
+            this.indexCounter+0, this.indexCounter+2, this.indexCounter+3
+        );
+        this.indexCounter += 4;
+    }
+    createCubeFaceNegY(VBO,IBO,minX,minY,minZ,uvStart,uvEnd){
+        VBO.push(
+            minX, minY, minZ,       uvStart[0], uvStart[1],
+            minX, minY, minZ+1,     uvStart[0], uvEnd[1],
+            minX+1, minY, minZ+1,   uvEnd[0], uvEnd[1],
+            minX+1, minY, minZ,     uvEnd[0], uvStart[1]
+        );
+        IBO.push(
+            this.indexCounter+1, this.indexCounter+0, this.indexCounter+2,
+            this.indexCounter+2, this.indexCounter+0, this.indexCounter+3
+        );
+        this.indexCounter += 4;
+    }
+    createCubeFacePosX(VBO,IBO,minX,minY,minZ,uvStart,uvEnd){
+        VBO.push(
+            minX+1, minY+1, minZ+1,   uvStart[0], uvStart[1],
+            minX+1, minY, minZ+1,     uvStart[0], uvEnd[1],
+            minX+1, minY, minZ,       uvEnd[0], uvEnd[1],
+            minX+1, minY+1, minZ,     uvEnd[0], uvStart[1]
+        );
+        IBO.push(
+            this.indexCounter+0, this.indexCounter+1, this.indexCounter+2,
+            this.indexCounter+0, this.indexCounter+2, this.indexCounter+3
+        );
+        this.indexCounter += 4;
+    }
+    createCubeFaceNegX(VBO,IBO,minX,minY,minZ,uvStart,uvEnd){
+        VBO.push(
+            minX, minY+1, minZ+1,   uvEnd[0], uvStart[1],
+            minX, minY, minZ+1,     uvEnd[0], uvEnd[1],
+            minX, minY, minZ,       uvStart[0], uvEnd[1],
+            minX, minY+1, minZ,     uvStart[0], uvStart[1]
+        );
+        IBO.push(
+            this.indexCounter+1, this.indexCounter+0, this.indexCounter+2,
+            this.indexCounter+2, this.indexCounter+0, this.indexCounter+3
+        );
+        this.indexCounter += 4;
+    }
+    createCubeFacePosZ(VBO,IBO,minX,minY,minZ,uvStart,uvEnd){
+        VBO.push(
+            minX+1, minY+1, minZ+1,   uvEnd[0], uvStart[1],
+            minX+1, minY, minZ+1,     uvEnd[0], uvEnd[1],
+            minX, minY, minZ+1,       uvStart[0], uvEnd[1],
+            minX, minY+1, minZ+1,     uvStart[0], uvStart[1]
+        );
+        IBO.push(
+            this.indexCounter+1, this.indexCounter+0, this.indexCounter+2,
+            this.indexCounter+2, this.indexCounter+0, this.indexCounter+3
+        );
+        this.indexCounter += 4;
+    }
+    createCubeFaceNegZ(VBO,IBO,minX,minY,minZ,uvStart,uvEnd){
+        VBO.push(
+            minX+1, minY+1, minZ,   uvStart[0], uvStart[1],
+            minX+1, minY, minZ,     uvStart[0], uvEnd[1],
+            minX, minY, minZ,       uvEnd[0], uvEnd[1],
+            minX, minY+1, minZ,     uvEnd[0], uvStart[1]
+        );
+        IBO.push(
+            this.indexCounter+0, this.indexCounter+1, this.indexCounter+2,
+            this.indexCounter+0, this.indexCounter+2, this.indexCounter+3
+        );
+        this.indexCounter += 4;
     }
 }
 

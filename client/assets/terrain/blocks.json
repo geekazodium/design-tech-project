@@ -1,0 +1,16 @@
+[
+    {
+        "id":1,
+        "name":"grass-block",
+        "type":"dir-const",
+        "posY":"grass-top",
+        "negY":"dirt-all",
+        "default":"grass-side"
+    },
+    {
+        "id":2,
+        "name":"dirt-block",
+        "type":"dir-none",
+        "default":"dirt-all"
+    }
+]

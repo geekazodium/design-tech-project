@@ -1,3 +1,4 @@
+import { BlockTextureMap } from "../render/BlockTextureMap.mjs";
 import { TerrainTextureAtlasBuilder } from "./TerrainTextureAtlasBuilder.mjs";
 
 class AssetLoader{
@@ -5,10 +6,13 @@ class AssetLoader{
         this.path = path;
         this.loaders = new Map();
         this.terrainTextureAtlasBuilder = new TerrainTextureAtlasBuilder();
+        this.blockTextureMap = undefined;
+        this.blockTextureFile = undefined;
         this.terrainTextureAtlas = undefined;
         this.initImgLoader();
         this.initBBMLoader();
         this.initTerrainTextureAtlasBuilder();
+        this.initBlockTextureFile();
         this.bbModels = [];
     }
     initImgLoader(){
@@ -28,6 +32,13 @@ class AssetLoader{
                 });
         });
     }
+    resolveAfter(time) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, time);
+        });
+    }
     initTerrainTextureAtlasBuilder(){
         this.loaders.set("textureRefsheet",(element)=>{
             if(element.target == "terrainAssets"){
@@ -35,8 +46,27 @@ class AssetLoader{
                     .then((response) => response.json())
                     .then((json) => {
                         this.terrainTextureAtlas = this.terrainTextureAtlasBuilder.load(json);
+                        var async_section = async ()=>{
+                            while(this.blockTextureFile == undefined){
+                                await this.resolveAfter(100);
+                            }
+                            this.blockTextureMap = new BlockTextureMap(
+                                this.blockTextureFile,
+                                this.terrainTextureAtlas
+                                );
+                        }
+                        async_section();
                     });
             }
+        });
+    }
+    initBlockTextureFile(){
+        this.loaders.set("blockTextureFile",(element)=>{
+            fetch(element.src)
+            .then((response) => response.json())
+            .then((json) => {
+                this.blockTextureFile = json;
+            });
         });
     }
     load(res){

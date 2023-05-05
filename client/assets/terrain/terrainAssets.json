@@ -2,12 +2,12 @@
     "version":1,
     "textures":[
         {
-            "id":"skybox-side",
+            "id":"grass-top",
             "x":0,
             "y":0,
             "width":16,
             "height":16,
-            "src":"./assets/skybox.png"
+            "src":"./assets/terrain/grass-top.png"
         },
         {
             "id":"grass-side",
@@ -16,6 +16,14 @@
             "width":16,
             "height":16,
             "src":"./assets/terrain/grass-side.png"
+        },
+        {
+            "id":"dirt-all",
+            "x":32,
+            "y":0,
+            "width":16,
+            "height":16,
+            "src":"./assets/terrain/dirt-all.png"
         }
     ]
 }
