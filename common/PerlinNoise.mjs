@@ -9,14 +9,13 @@ class LayeredPerlinNoise{
     get(x,y){
         var out = 0;
         this.layers.forEach(layer => {
-            out += perlinNoise.perlin(x*layer.scale+layer.x,y*layer.scale+layer.y);
+            out += (perlinNoise.perlin(x/layer.scale+layer.x,y/layer.scale+layer.y)+layer.bias)*layer.weight;
         });
         return out;
     }
 }
 
 class PerlinNoise{
-
     interpolate(a0, a1, w) {
         /* // You may want clamping by inserting:
          * if (0.0 > w) return a0;
@@ -89,5 +88,6 @@ class PerlinNoise{
 }
 const perlinNoise = new PerlinNoise();
 
+const terrainLayered = new LayeredPerlinNoise({scale:7.5,x:0,y:0,weight:10,bias:0.5},{scale:10,x:0,y:0,weight:100,bias:0.5},{scale:1,x:0,y:0,weight:10,bias:0},{scale:0.5,x:0,y:0,weight:2,bias:0});
 
-export {LayeredPerlinNoise,perlinNoise};
+export {LayeredPerlinNoise,perlinNoise,terrainLayered};

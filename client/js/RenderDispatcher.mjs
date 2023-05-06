@@ -5,7 +5,7 @@ import { TerrainRenderer } from "./render/TerrainRenderer.mjs";
 
 class RenderDispatcher{
     constructor(canvas,camera){
-        this.rebuildTimer = 0;
+        this.rebuildTimer = 20;
         this.init = false;
         this.preRender = ()=>{};
         this.canvas = canvas;
@@ -50,7 +50,7 @@ class RenderDispatcher{
         this.renderersIdMap.get(rendererId).attachBufferBuilder(bufferBuilder);
     }
     async rebuildBuffers(ctx){
-        this.bufferBuilders.forEach((builder,key)=>{
+        this.bufferBuilders.forEach(async (builder,key)=>{
             builder.rebuild(ctx);
         });
     }
@@ -63,7 +63,7 @@ class RenderDispatcher{
         });
         this.rebuildTimer--;
         if(this.rebuildTimer<=0){
-            this.rebuildTimer = 100;
+            this.rebuildTimer = 60;
             this.rebuildBuffers(this.ctx);
         }
         window.requestAnimationFrame((time)=>{this.render(time);});

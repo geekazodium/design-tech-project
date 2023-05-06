@@ -4,6 +4,17 @@ import { TextureAtlas } from "./render/TextureAtlas.mjs";
 import { Chunk } from "./utils/World.mjs";
 
 const maxGlIndex = Math.pow(2,16);
+const renderDistance = 24;
+
+const chunks = [];
+for (let chunkX = 0; chunkX < renderDistance; chunkX++) {
+    chunks.push([]);
+    for(let chunkZ = 0; chunkZ < renderDistance; chunkZ++){
+        var chunk = new Chunk(chunkX,chunkZ);
+        chunk.generate(chunkX,chunkZ);
+        chunks[chunkX].push(chunk);
+    }
+}
 
 class TerrainBufferBuilder extends BufferBuilder{
     /**
@@ -14,30 +25,27 @@ class TerrainBufferBuilder extends BufferBuilder{
     constructor(textureAtlas,texMap){
         super(textureAtlas);
         this.texMap = texMap;
+        this.built = false;
+        this.building = false;
     }
     async rebuild(gl){
+        if(this.building)return;
+        this.building = true;
         super.rebuild();
         var tempVBOs = [[]];
         var tempIBOs = [[]];
 
-        var chunks = [];
-        for (let chunkX = 0; chunkX < 8; chunkX++) {
-            chunks.push([]);
-            for(let chunkZ = 0; chunkZ < 8; chunkZ++){
-                var chunk = new Chunk(chunkX,chunkZ);
-                chunk.generate(chunkX,chunkZ);
-                chunks[chunkX].push(chunk);
-            }
-        }
-        
-        for (let chunkX = 0; chunkX < 8; chunkX++) {
-            for(let chunkZ = 0; chunkZ < 8; chunkZ++){
+        for (let chunkX = 0; chunkX < renderDistance; chunkX++) {
+            for(let chunkZ = 0; chunkZ < renderDistance; chunkZ++){
                 const chunk = chunks[chunkX][chunkZ];
-                const chunkPX = (chunkX+1 < 8)?chunks[chunkX+1][chunkZ]:undefined;
+                const chunkPX = (chunkX+1 < renderDistance)?chunks[chunkX+1][chunkZ]:undefined;
                 const chunkNX = (chunkX > 0)?chunks[chunkX-1][chunkZ]:undefined;
                 const chunkPZ = chunks[chunkX][chunkZ+1];
                 const chunkNZ = chunks[chunkX][chunkZ-1];
                 this.addChunkBuffer(chunk,chunkPX,chunkNX,chunkPZ,chunkNZ,chunkX,chunkZ,tempVBOs,tempIBOs);
+                if(this.built){
+                    await this.resolveAfter(1);
+                }
             }
         }
 
@@ -54,16 +62,22 @@ class TerrainBufferBuilder extends BufferBuilder{
         for (let i = 0; i < tempVBOs.length; i++) {
             const vboArray = tempVBOs[i];
             const vertexBuffer = this.renderer.terrainVBOs[i];
-            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vboArray), gl.DYNAMIC_DRAW);
-        }
-        for (let i = 0; i < tempIBOs.length; i++) {
             const iboArray = tempIBOs[i];
             const indexBuffer = this.renderer.terrainIBOs[i];
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vboArray), gl.DYNAMIC_DRAW);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(iboArray), gl.DYNAMIC_DRAW);
         }
-
+        this.built = true;
+        this.building = false;
+    }
+    resolveAfter(time) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, time);
+        });
     }
     /**
      * 

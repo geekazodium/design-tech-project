@@ -1,4 +1,4 @@
-import { perlinNoise } from "../../../common/PerlinNoise.mjs";
+import { LayeredPerlinNoise, perlinNoise, terrainLayered } from "../../../common/PerlinNoise.mjs";
 import { Vec3i } from "../../../common/Vec.mjs";
 
 class World{
@@ -46,7 +46,7 @@ class Chunk{
     generate(chunkX,chunkZ){
         for (let x = 0; x < 16; x++) {
             for (let z = 0; z < 16; z++) {
-                var height = Math.floor((perlinNoise.perlin((x+chunkX*16)/16,(z+chunkZ*16)/16)+1)*22);
+                var height = Math.floor((terrainLayered.get((x+chunkX*16)/16,(z+chunkZ*16)/16)+1));
                 for(let y = 0; y<height;y++){
                     if(y==height-1){
                         this.setBlockAt(x,y,z,1);

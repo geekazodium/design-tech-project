@@ -17,6 +17,7 @@ class TerrainTextureAtlasBuilder{
         canvas.width = 128;
         canvas.height = 128;
         var drawContext = canvas.getContext("2d");
+        drawContext.clearRect(0,0,128,128);
         drawContext.imageSmoothingEnabled = false;
         drawContext.mozImageSmoothingEnabled = false;
         drawContext.webkitImageSmoothingEnabled = false;
@@ -40,6 +41,64 @@ class TerrainTextureAtlasBuilder{
         var temporaryImage = new Image(texture.width,texture.height);
         temporaryImage.src = texture.src;
         temporaryImage.onload = ()=>{
+            drawContext.drawImage(
+                temporaryImage,
+                texture.x-1,
+                texture.y-1,
+                texture.width,
+                texture.height
+            );
+            drawContext.drawImage(
+                temporaryImage,
+                texture.x-1,
+                texture.y+1,
+                texture.width,
+                texture.height
+            );
+            drawContext.drawImage(
+                temporaryImage,
+                texture.x+1,
+                texture.y-1,
+                texture.width,
+                texture.height
+            );
+            drawContext.drawImage(
+                temporaryImage,
+                texture.x+1,
+                texture.y+1,
+                texture.width,
+                texture.height
+            );
+            //corner draw end
+            drawContext.drawImage(
+                temporaryImage,
+                texture.x,
+                texture.y+1,
+                texture.width,
+                texture.height
+            );
+            drawContext.drawImage(
+                temporaryImage,
+                texture.x,
+                texture.y-1,
+                texture.width,
+                texture.height
+            );
+            drawContext.drawImage(
+                temporaryImage,
+                texture.x+1,
+                texture.y,
+                texture.width,
+                texture.height
+            );
+            drawContext.drawImage(
+                temporaryImage,
+                texture.x-1,
+                texture.y,
+                texture.width,
+                texture.height
+            );
+            //center image   
             drawContext.drawImage(
                 temporaryImage,
                 texture.x,
