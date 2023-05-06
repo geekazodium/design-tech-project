@@ -5,6 +5,8 @@ import { BlockTextureMap, negX, negY, negZ, posX, posY, posZ } from "./render/Bl
 import { TextureAtlas } from "./render/TextureAtlas.mjs";
 import { Chunk } from "./utils/World.mjs";
 
+const maxGlIndex = Math.pow(2,16);
+
 class TerrainBufferBuilder extends BufferBuilder{
     /**
      * 
@@ -20,13 +22,27 @@ class TerrainBufferBuilder extends BufferBuilder{
         var tempVBOs = [[]];
         var tempIBOs = [[]];
 
+        var chunks = [];
         for (let chunkX = 0; chunkX < 8; chunkX++) {
+            chunks.push([]);
             for(let chunkZ = 0; chunkZ < 8; chunkZ++){
                 var chunk = new Chunk(chunkX,chunkZ);
                 chunk.generate(chunkX,chunkZ);
-                this.addChunkBuffer(chunk,chunkX,chunkZ,tempVBOs,tempIBOs);
+                chunks[chunkX].push(chunk);
             }
         }
+        
+        for (let chunkX = 0; chunkX < 8; chunkX++) {
+            for(let chunkZ = 0; chunkZ < 8; chunkZ++){
+                const chunk = chunks[chunkX][chunkZ];
+                const chunkPX = (chunkX+1 < 8)?chunks[chunkX+1][chunkZ]:undefined;
+                const chunkNX = (chunkX > 0)?chunks[chunkX-1][chunkZ]:undefined;
+                const chunkPZ = chunks[chunkX][chunkZ+1];
+                const chunkNZ = chunks[chunkX][chunkZ-1];
+                this.addChunkBuffer(chunk,chunkPX,chunkNX,chunkPZ,chunkNZ,chunkX,chunkZ,tempVBOs,tempIBOs);
+            }
+        }
+
         this.bufferLengths = [];
         tempIBOs.forEach(ibo=>{
             this.bufferLengths.push(ibo.length);
@@ -51,7 +67,19 @@ class TerrainBufferBuilder extends BufferBuilder{
         }
 
     }
-    addChunkBuffer(chunk,chunkX,chunkZ,tempVBOs,tempIBOs){
+    /**
+     * 
+     * @param {Chunk} chunk 
+     * @param {Chunk} chunkNextX 
+     * @param {Chunk} chunkPrevX 
+     * @param {Chunk} chunkNextZ 
+     * @param {Chunk} chunkPrevZ 
+     * @param {Number} chunkX 
+     * @param {Number} chunkZ 
+     * @param {*} tempVBOs 
+     * @param {*} tempIBOs 
+     */
+    addChunkBuffer(chunk,chunkNextX,chunkPrevX,chunkNextZ,chunkPrevZ,chunkX,chunkZ,tempVBOs,tempIBOs){
         const vertical = 0b100000000;
         const forward = 0b1;
         const side = 0b10000;
@@ -65,16 +93,29 @@ class TerrainBufferBuilder extends BufferBuilder{
             var minY = (i&0b1111111100000000)>>8;
             const under = chunk.blocks[i-vertical];
             const above = chunk.blocks[i+vertical];
-            const negX_ = chunk.blocks[i-forward];
-            const posX_ = chunk.blocks[i+forward];
-            const posZ_ = chunk.blocks[i+side];
-            const negZ_ = chunk.blocks[i-side];
+
+            var negX_ = chunk.blocks[i-forward];
+            if(chunkPrevX) negX_ = (minX-1 < 0) ? chunkPrevX.getBlockAtChunkCoords(0b1111,minY,minZ):negX_;
+            else negX_ *= !(minX-1 < 0); // type conversion magic, true = 1, false = 0, I want it to return the value if true and 0 if false. I'm trying to avoid branching.
+            
+            var posX_ = chunk.blocks[i+forward];
+            if(chunkNextX) posX_ = (minX+1 > 0b1111) ? chunkNextX.getBlockAtChunkCoords(0,minY,minZ):posX_;
+            else posX_ *= !(minX+1 > 0b1111);
+
+            var negZ_ = chunk.blocks[i-side];
+            if(chunkPrevZ) negZ_ = (minZ-1 < 0) ? chunkPrevZ.getBlockAtChunkCoords(minX,minY,0b1111):negZ_;
+            else negZ_ *= !(minZ-1 < 0);
+
+            var posZ_ = chunk.blocks[i+side];
+            if(chunkNextZ) posZ_ = (minZ+1 > 0b1111) ? chunkNextZ.getBlockAtChunkCoords(minX,minY,0):posZ_;
+            else posZ_ *= !(minZ+1 > 0b1111);
+
             minX+=chunkX*16;
             minZ+=chunkZ*16;
 
             var tempVBO = tempVBOs[tempVBOs.length-1];
             var tempIBO = tempIBOs[tempIBOs.length-1];
-            if(tempVBO.length >= 64*64*32){
+            if(this.indexCounter >= maxGlIndex-64){
                 tempVBO = [];
                 tempVBOs.push(tempVBO);
                 tempIBO = [];

@@ -60,6 +60,9 @@ class Chunk{
     setBlockAt(x,y,z,id){
         this.blocks[this.getBlockPointer(x,y,z)]=id;
     }
+    getBlockAtChunkCoords(x,y,z){
+        return this.blocks[this.getBlockPointer(x,y,z)];
+    }
 }
 
 export {World,Chunk};
