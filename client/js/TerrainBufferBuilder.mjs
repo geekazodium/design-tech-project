@@ -1,5 +1,3 @@
-import { perlinNoise } from "../../common/PerlinNoise.mjs";
-import { min } from "../libraries/esm/vec3.js";
 import { BufferBuilder } from "./BufferBuilder.mjs";
 import { BlockTextureMap, negX, negY, negZ, posX, posY, posZ } from "./render/BlockTextureMap.mjs";
 import { TextureAtlas } from "./render/TextureAtlas.mjs";

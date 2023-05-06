@@ -1,7 +1,4 @@
 import { client } from "../ClientMain.mjs";
-import { RenderDispatcher } from "../RenderDispatcher.mjs";
-import { AbstractScreen } from "./AbstractScreen.mjs";
-import { IngameScreen } from "./IngameScreen.mjs";
 import { LoginScreen } from "./LoginScreen.mjs";
 import { MenuScreen } from "./MenuScreen.mjs";
 
