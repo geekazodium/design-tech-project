@@ -46,14 +46,10 @@ class BlockTextureMap{
         return this.normalizeTextCoords(start,end);
     }
     normalizeTextCoords(start,end){
-        var scaleIn = 0.001;
-        start[0]/=this.width;
+        var scaleIn = 0;
         start[0]+=scaleIn;
-        start[1]/=this.height;
         start[1]+=scaleIn;
-        end[0]/=this.width;
         end[0]-=scaleIn;
-        end[1]/=this.height;
         end[1]-=scaleIn;
         return [start,end];
     }

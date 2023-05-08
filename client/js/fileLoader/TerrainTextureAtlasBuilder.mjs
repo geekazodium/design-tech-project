@@ -43,64 +43,6 @@ class TerrainTextureAtlasBuilder{
         temporaryImage.onload = ()=>{
             drawContext.drawImage(
                 temporaryImage,
-                texture.x-1,
-                texture.y-1,
-                texture.width,
-                texture.height
-            );
-            drawContext.drawImage(
-                temporaryImage,
-                texture.x-1,
-                texture.y+1,
-                texture.width,
-                texture.height
-            );
-            drawContext.drawImage(
-                temporaryImage,
-                texture.x+1,
-                texture.y-1,
-                texture.width,
-                texture.height
-            );
-            drawContext.drawImage(
-                temporaryImage,
-                texture.x+1,
-                texture.y+1,
-                texture.width,
-                texture.height
-            );
-            //corner draw end
-            drawContext.drawImage(
-                temporaryImage,
-                texture.x,
-                texture.y+1,
-                texture.width,
-                texture.height
-            );
-            drawContext.drawImage(
-                temporaryImage,
-                texture.x,
-                texture.y-1,
-                texture.width,
-                texture.height
-            );
-            drawContext.drawImage(
-                temporaryImage,
-                texture.x+1,
-                texture.y,
-                texture.width,
-                texture.height
-            );
-            drawContext.drawImage(
-                temporaryImage,
-                texture.x-1,
-                texture.y,
-                texture.width,
-                texture.height
-            );
-            //center image   
-            drawContext.drawImage(
-                temporaryImage,
                 texture.x,
                 texture.y,
                 texture.width,

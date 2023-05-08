@@ -3,24 +3,24 @@
     "textures":[
         {
             "id":"grass-top",
-            "x":1,
-            "y":1,
+            "x":0,
+            "y":0,
             "width":16,
             "height":16,
             "src":"./assets/terrain/grass-top.png"
         },
         {
             "id":"grass-side",
-            "x":18,
-            "y":1,
+            "x":16,
+            "y":0,
             "width":16,
             "height":16,
             "src":"./assets/terrain/grass-side.png"
         },
         {
             "id":"dirt-all",
-            "x":35,
-            "y":1,
+            "x":32,
+            "y":0,
             "width":16,
             "height":16,
             "src":"./assets/terrain/dirt-all.png"
