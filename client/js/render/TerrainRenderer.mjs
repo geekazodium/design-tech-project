@@ -25,7 +25,7 @@ varying mediump vec2 fragTexPosition;
 uniform sampler2D sampler;
 
 void main(){
-    gl_FragColor = texture2D(sampler, fragTexPosition/128.0);
+    gl_FragColor = texture2D(sampler, fragTexPosition);
 }`;
 
 class TerrainRenderer extends Renderer{
@@ -67,10 +67,10 @@ class TerrainRenderer extends Renderer{
             gl.UNSIGNED_BYTE,
             img
 	    );
-        gl.generateMipmap(gl.TEXTURE_2D);
+        //gl.generateMipmap(gl.TEXTURE_2D);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	    gl.bindTexture(gl.TEXTURE_2D, null);
     }
@@ -120,7 +120,7 @@ class TerrainRenderer extends Renderer{
     }
     render(gl,timestamp,renderContext,visibleChunks){
         gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
+        gl.disable(gl.CULL_FACE);
         gl.frontFace(gl.CCW);
         gl.cullFace(gl.BACK);
         

@@ -37,12 +37,9 @@ class RenderDispatcher{
         this.renderersIdMap = idMap;
     }
     getContext(canvas){
-        let ctx = canvas.getContext("webgl");
+        let ctx = canvas.getContext("webgl2");
         if(ctx)return ctx;
-        console.warn("browser does not support webgl, attempting to fallback on experimental");
-        ctx = canvas.getContext("experimental-webgl");
-        if(ctx)return ctx;
-        console.error("browser does not support experimental webgl, shutting down...");
+        console.error("browser does not support webgl2");
         return false;
     }
     attachBufferBuilder(bufferBuilder,rendererId,key){
