@@ -12,5 +12,11 @@
         "name":"dirt-block",
         "type":"dir-none",
         "default":"dirt-all"
+    },
+    {
+        "id":3,
+        "name":"log-block",
+        "type":"dir-none",
+        "default":"log-side"
     }
 ]

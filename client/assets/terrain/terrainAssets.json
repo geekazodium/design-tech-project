@@ -15,6 +15,11 @@
             "index":2,
             "id":"dirt-all",
             "src":"./assets/terrain/dirt-all.png"
+        },
+        {
+            "index":3,
+            "id":"log-side",
+            "src":"./assets/terrain/log-side.png"
         }
     ]
 }
