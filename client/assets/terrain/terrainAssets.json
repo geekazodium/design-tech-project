@@ -2,27 +2,18 @@
     "version":1,
     "textures":[
         {
+            "index":0,
             "id":"grass-top",
-            "x":0,
-            "y":0,
-            "width":16,
-            "height":16,
             "src":"./assets/terrain/grass-top.png"
         },
         {
+            "index":1,
             "id":"grass-side",
-            "x":16,
-            "y":0,
-            "width":16,
-            "height":16,
             "src":"./assets/terrain/grass-side.png"
         },
         {
+            "index":2,
             "id":"dirt-all",
-            "x":32,
-            "y":0,
-            "width":16,
-            "height":16,
             "src":"./assets/terrain/dirt-all.png"
         }
     ]

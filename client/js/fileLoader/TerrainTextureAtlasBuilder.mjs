@@ -1,5 +1,9 @@
 import { TextureAtlas } from "../render/TextureAtlas.mjs";
 
+const newTextureLineAt = 8;
+const textureWidth = 16;
+const textureHeight = 16;
+
 class TerrainTextureAtlasBuilder{
     constructor(){
         this.startedCount = 0;
@@ -43,10 +47,10 @@ class TerrainTextureAtlasBuilder{
         temporaryImage.onload = ()=>{
             drawContext.drawImage(
                 temporaryImage,
-                texture.x,
-                texture.y,
-                texture.width,
-                texture.height
+                (texture.index%newTextureLineAt)*textureWidth,
+                Math.floor(texture.index/newTextureLineAt)*textureHeight,
+                textureWidth,
+                textureHeight
             );
             this.finishedCount ++;
         }

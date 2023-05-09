@@ -35,6 +35,12 @@ class BlockTextureMap{
         if(face == posZ)return block.posZ;
         if(face == negZ)return block.negZ;
     }
+    /**
+     * @deprecated
+     * @param {*} id 
+     * @param {*} face 
+     * @returns 
+     */
     getForBlock(id,face){
         var texName = this.getTextureName(
             this.mapping.get(id),
@@ -45,8 +51,16 @@ class BlockTextureMap{
         var end = [tex.x+tex.width,tex.y+tex.height];
         return this.normalizeTextCoords(start,end);
     }
+    getZForBlock(id,face){
+        var texName = this.getTextureName(
+            this.mapping.get(id),
+            face
+        );
+        var tex = this.atlas.references.get(texName);
+        return tex.index;
+    }
     normalizeTextCoords(start,end){
-        const shiftIn = 5;
+        const shiftIn = 0;
         start[0]+=shiftIn;
         start[1]+=shiftIn;
         start[0]/=this.width;
