@@ -88,7 +88,7 @@ class TerrainRenderer extends Renderer{
         const totalTextures = imageData.length/4/textureHeight/textureWidth;
         gl.texStorage3D(
             gl.TEXTURE_2D_ARRAY, 
-            newLineAt, 
+            4, 
             gl.RGBA8, 
             textureWidth,
             textureHeight,
@@ -111,6 +111,7 @@ class TerrainRenderer extends Renderer{
         // Step 5: Loop through each image in your atlas
         for (let i = 0; i < totalTextures; i++) {
             gl.bindBuffer(gl.PIXEL_UNPACK_BUFFER, pbo);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
             //Step 6: figure out the origin point of the texture at that index
             const row = Math.floor(i / newLineAt) * textureHeight;
             const col = (i % newLineAt) * textureWidth;
