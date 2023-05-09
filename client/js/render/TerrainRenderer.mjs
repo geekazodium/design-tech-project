@@ -85,7 +85,7 @@ class TerrainRenderer extends Renderer{
         gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
 
         // Step 2: allocate space on the GPU for your texture data
-        const totalTextures = imageData/4/textureHeight/textureWidth;
+        const totalTextures = imageData.length/4/textureHeight/textureWidth;
         gl.texStorage3D(
             gl.TEXTURE_2D_ARRAY, 
             newLineAt, 
@@ -122,7 +122,7 @@ class TerrainRenderer extends Renderer{
             // Step 8: Tell webgl to use the PBO and write that texture at its own depth
             gl.texSubImage3D(
                 gl.TEXTURE_2D_ARRAY, 
-                1,
+                0,
 
                 0,0,i, 
 
