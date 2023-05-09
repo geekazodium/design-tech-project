@@ -9,15 +9,14 @@ uniform mat4 mRotation;
 uniform vec3 vPosition;
 uniform mat4 mProjection;
 layout(location=0) in vec3 vertPosition;
-layout(location=1) in vec2 texPosition;
-layout(location=2) in float aDepth;
+layout(location=1) in vec3 texPosition;
 
 out float vDepth;
 out vec2 fragTexPosition;
 
 void main(){
-    vDepth = aDepth;
-    fragTexPosition = texPosition;
+    vDepth = texPosition[2];
+    fragTexPosition = vec2(texPosition);
     gl_Position = mProjection * mRotation * vec4(vertPosition - vPosition, 1.0);
 }`;
 
@@ -181,6 +180,13 @@ class TerrainRenderer extends Renderer{
 
         this.terrainRenderProgram = this.linkProgram(gl,vertexShader,fragmentShader);
     }
+    /**
+     * 
+     * @param {WebGL2RenderingContext} gl 
+     * @param {*} timestamp 
+     * @param {*} renderContext 
+     * @param {*} visibleChunks 
+     */
     render(gl,timestamp,renderContext,visibleChunks){
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
@@ -215,19 +221,11 @@ class TerrainRenderer extends Renderer{
             );
             gl.vertexAttribPointer(
                 this.textureAttribLocation,
-                2,
+                3,
                 gl.FLOAT,
                 gl.FALSE,
                 6 * Float32Array.BYTES_PER_ELEMENT,
                 3 * Float32Array.BYTES_PER_ELEMENT
-            );
-            gl.vertexAttribPointer(
-                this.layerAttribLocation,
-                1,
-                gl.FLOAT,
-                gl.FALSE,
-                6 * Float32Array.BYTES_PER_ELEMENT,
-                5 * Float32Array.BYTES_PER_ELEMENT
             );
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
 		    gl.drawElements(gl.TRIANGLES, bufferLength, gl.UNSIGNED_SHORT, 0);
