@@ -68,6 +68,7 @@ class TerrainBufferBuilder extends BufferBuilder{
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vboArray), gl.DYNAMIC_DRAW);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(iboArray), gl.DYNAMIC_DRAW);
+            await this.resolveAfter(10);
         }
         this.built = true;
         this.building = false;
@@ -122,11 +123,17 @@ class TerrainBufferBuilder extends BufferBuilder{
             if(chunkNextZ) posZ_ = (minZ+1 > 0b1111) ? chunkNextZ.getBlockAtChunkCoords(minX,minY,0):posZ_;
             else posZ_ *= !(minZ+1 > 0b1111);
 
-            const X_brightness = [0.65,0.65,0.65];
+            var X_brightness = [0.65,0.65,0.65];
             var Y_brightness = [0.95,0.95,0.95];
-            const Z_brightness = [0.75,0.75,0.75];
+            var Z_brightness = [0.75,0.75,0.75];
             if((minX === 0)||(minZ=== 0)){
-                Y_brightness = [0.2,0.5,1];
+                X_brightness = [0.2*0.65,   0.5*0.65,   1*0.65  ];
+                Y_brightness = [0.2,        0.5,        1       ];
+                Z_brightness = [0.2*0.75,   0.5*0.75,   1*0.75  ];
+            }else if((minX === 15)||(minZ=== 15)){
+                X_brightness = [1*0.65,     0.4*0.65,   0.1*0.65];
+                Y_brightness = [1,          0.4,        0.1     ];
+                Z_brightness = [1*0.75,     0.4*0.75,   0.1*0.75];
             }
 
             minX+=chunkX*16;
