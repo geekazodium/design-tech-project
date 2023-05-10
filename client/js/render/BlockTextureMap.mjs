@@ -60,13 +60,8 @@ class BlockTextureMap{
         return tex.index;
     }
     normalizeTextCoords(start,end){
-        const shiftIn = 0;
-        start[0]+=shiftIn;
-        start[1]+=shiftIn;
         start[0]/=this.width;
         start[1]/=this.height;
-        end[0]-=shiftIn;
-        end[1]-=shiftIn;
         end[0]/=this.width;
         end[1]/=this.height;
         return [start,end];

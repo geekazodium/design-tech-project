@@ -4,7 +4,7 @@ import { TextureAtlas } from "./render/TextureAtlas.mjs";
 import { Chunk } from "./utils/World.mjs";
 
 const maxGlIndex = Math.pow(2,16);
-const renderDistance = 24;
+const renderDistance = 32;
 
 const chunks = [];
 for (let chunkX = 0; chunkX < renderDistance; chunkX++) {
@@ -122,6 +122,13 @@ class TerrainBufferBuilder extends BufferBuilder{
             if(chunkNextZ) posZ_ = (minZ+1 > 0b1111) ? chunkNextZ.getBlockAtChunkCoords(minX,minY,0):posZ_;
             else posZ_ *= !(minZ+1 > 0b1111);
 
+            const X_brightness = [0.65,0.65,0.65];
+            var Y_brightness = [0.95,0.95,0.95];
+            const Z_brightness = [0.75,0.75,0.75];
+            if((minX === 0)||(minZ=== 0)){
+                Y_brightness = [0.2,0.5,1];
+            }
+
             minX+=chunkX*16;
             minZ+=chunkZ*16;
 
@@ -136,10 +143,6 @@ class TerrainBufferBuilder extends BufferBuilder{
             }
 
             var tex = [[0,0],[1,1]];
-
-            const X_brightness = 0.65;
-            const Y_brightness = 0.95;
-            const Z_brightness = 0.75;
             if(above == 0){
                 const uvLayer = this.texMap.getZForBlock(block,posY);
                 this.createCubeFacePosY(tempVBO,tempIBO,minX,minY,minZ,tex[0],tex[1],uvLayer,Y_brightness);
@@ -192,10 +195,10 @@ class TerrainBufferBuilder extends BufferBuilder{
     }
     createCubeFacePosY(VBO,IBO,minX,minY,minZ,uvStart,uvEnd,uvLayer, brightness){
         VBO.push(
-            minX, minY+1, minZ,       uvStart[0], uvStart[1],   uvLayer, brightness, brightness, brightness, 
-            minX, minY+1, minZ+1,     uvStart[0], uvEnd[1],     uvLayer, brightness, brightness, brightness,
-            minX+1, minY+1, minZ+1,   uvEnd[0], uvEnd[1],       uvLayer, brightness, brightness, brightness,
-            minX+1, minY+1, minZ,     uvEnd[0], uvStart[1],     uvLayer, brightness, brightness, brightness
+            minX, minY+1, minZ,       uvStart[0], uvStart[1],   uvLayer, brightness[0], brightness[1], brightness[2], 
+            minX, minY+1, minZ+1,     uvStart[0], uvEnd[1],     uvLayer, brightness[0], brightness[1], brightness[2],
+            minX+1, minY+1, minZ+1,   uvEnd[0], uvEnd[1],       uvLayer, brightness[0], brightness[1], brightness[2],
+            minX+1, minY+1, minZ,     uvEnd[0], uvStart[1],     uvLayer, brightness[0], brightness[1], brightness[2]
         );
         IBO.push(
             this.indexCounter+0, this.indexCounter+1, this.indexCounter+2,
@@ -205,10 +208,10 @@ class TerrainBufferBuilder extends BufferBuilder{
     }
     createCubeFaceNegY(VBO,IBO,minX,minY,minZ,uvStart,uvEnd,uvLayer, brightness){
         VBO.push(
-            minX, minY, minZ,       uvStart[0], uvStart[1],     uvLayer, brightness, brightness, brightness,
-            minX, minY, minZ+1,     uvStart[0], uvEnd[1],       uvLayer, brightness, brightness, brightness,
-            minX+1, minY, minZ+1,   uvEnd[0], uvEnd[1],         uvLayer, brightness, brightness, brightness,
-            minX+1, minY, minZ,     uvEnd[0], uvStart[1],       uvLayer, brightness, brightness, brightness
+            minX, minY, minZ,       uvStart[0], uvStart[1],     uvLayer, brightness[0], brightness[1], brightness[2],
+            minX, minY, minZ+1,     uvStart[0], uvEnd[1],       uvLayer, brightness[0], brightness[1], brightness[2],
+            minX+1, minY, minZ+1,   uvEnd[0], uvEnd[1],         uvLayer, brightness[0], brightness[1], brightness[2],
+            minX+1, minY, minZ,     uvEnd[0], uvStart[1],       uvLayer, brightness[0], brightness[1], brightness[2]
         );
         IBO.push(
             this.indexCounter+1, this.indexCounter+0, this.indexCounter+2,
@@ -218,10 +221,10 @@ class TerrainBufferBuilder extends BufferBuilder{
     }
     createCubeFacePosX(VBO,IBO,minX,minY,minZ,uvStart,uvEnd,uvLayer, brightness){
         VBO.push(
-            minX+1, minY+1, minZ+1,   uvStart[0], uvStart[1],   uvLayer, brightness, brightness, brightness,
-            minX+1, minY, minZ+1,     uvStart[0], uvEnd[1],     uvLayer, brightness, brightness, brightness,
-            minX+1, minY, minZ,       uvEnd[0], uvEnd[1],       uvLayer, brightness, brightness, brightness,
-            minX+1, minY+1, minZ,     uvEnd[0], uvStart[1],     uvLayer, brightness, brightness, brightness
+            minX+1, minY+1, minZ+1,   uvStart[0], uvStart[1],   uvLayer, brightness[0], brightness[1], brightness[2],
+            minX+1, minY, minZ+1,     uvStart[0], uvEnd[1],     uvLayer, brightness[0], brightness[1], brightness[2],
+            minX+1, minY, minZ,       uvEnd[0], uvEnd[1],       uvLayer, brightness[0], brightness[1], brightness[2],
+            minX+1, minY+1, minZ,     uvEnd[0], uvStart[1],     uvLayer, brightness[0], brightness[1], brightness[2]
         );
         IBO.push(
             this.indexCounter+0, this.indexCounter+1, this.indexCounter+2,
@@ -231,10 +234,10 @@ class TerrainBufferBuilder extends BufferBuilder{
     }
     createCubeFaceNegX(VBO,IBO,minX,minY,minZ,uvStart,uvEnd,uvLayer, brightness){
         VBO.push(
-            minX, minY+1, minZ+1,   uvEnd[0], uvStart[1],       uvLayer, brightness, brightness, brightness,
-            minX, minY, minZ+1,     uvEnd[0], uvEnd[1],         uvLayer, brightness, brightness, brightness,
-            minX, minY, minZ,       uvStart[0], uvEnd[1],       uvLayer, brightness, brightness, brightness,
-            minX, minY+1, minZ,     uvStart[0], uvStart[1],     uvLayer, brightness, brightness, brightness,
+            minX, minY+1, minZ+1,   uvEnd[0], uvStart[1],       uvLayer, brightness[0], brightness[1], brightness[2],
+            minX, minY, minZ+1,     uvEnd[0], uvEnd[1],         uvLayer, brightness[0], brightness[1], brightness[2],
+            minX, minY, minZ,       uvStart[0], uvEnd[1],       uvLayer, brightness[0], brightness[1], brightness[2],
+            minX, minY+1, minZ,     uvStart[0], uvStart[1],     uvLayer, brightness[0], brightness[1], brightness[2],
         );
         IBO.push(
             this.indexCounter+1, this.indexCounter+0, this.indexCounter+2,
@@ -244,10 +247,10 @@ class TerrainBufferBuilder extends BufferBuilder{
     }
     createCubeFacePosZ(VBO,IBO,minX,minY,minZ,uvStart,uvEnd,uvLayer, brightness){
         VBO.push(
-            minX+1, minY+1, minZ+1,   uvEnd[0], uvStart[1],     uvLayer, brightness, brightness, brightness,
-            minX+1, minY, minZ+1,     uvEnd[0], uvEnd[1],       uvLayer, brightness, brightness, brightness,
-            minX, minY, minZ+1,       uvStart[0], uvEnd[1],     uvLayer, brightness, brightness, brightness,
-            minX, minY+1, minZ+1,     uvStart[0], uvStart[1],   uvLayer, brightness, brightness, brightness
+            minX+1, minY+1, minZ+1,   uvEnd[0], uvStart[1],     uvLayer, brightness[0], brightness[1], brightness[2],
+            minX+1, minY, minZ+1,     uvEnd[0], uvEnd[1],       uvLayer, brightness[0], brightness[1], brightness[2],
+            minX, minY, minZ+1,       uvStart[0], uvEnd[1],     uvLayer, brightness[0], brightness[1], brightness[2],
+            minX, minY+1, minZ+1,     uvStart[0], uvStart[1],   uvLayer, brightness[0], brightness[1], brightness[2]
         );
         IBO.push(
             this.indexCounter+1, this.indexCounter+0, this.indexCounter+2,
@@ -257,10 +260,10 @@ class TerrainBufferBuilder extends BufferBuilder{
     }
     createCubeFaceNegZ(VBO,IBO,minX,minY,minZ,uvStart,uvEnd,uvLayer, brightness){
         VBO.push(
-            minX+1, minY+1, minZ,   uvStart[0], uvStart[1],     uvLayer, brightness, brightness, brightness,
-            minX+1, minY, minZ,     uvStart[0], uvEnd[1],       uvLayer, brightness, brightness, brightness,
-            minX, minY, minZ,       uvEnd[0], uvEnd[1],         uvLayer, brightness, brightness, brightness,
-            minX, minY+1, minZ,     uvEnd[0], uvStart[1],       uvLayer, brightness, brightness, brightness
+            minX+1, minY+1, minZ,   uvStart[0], uvStart[1],     uvLayer, brightness[0], brightness[1], brightness[2],
+            minX+1, minY, minZ,     uvStart[0], uvEnd[1],       uvLayer, brightness[0], brightness[1], brightness[2],
+            minX, minY, minZ,       uvEnd[0], uvEnd[1],         uvLayer, brightness[0], brightness[1], brightness[2],
+            minX, minY+1, minZ,     uvEnd[0], uvStart[1],       uvLayer, brightness[0], brightness[1], brightness[2]
         );
         IBO.push(
             this.indexCounter+0, this.indexCounter+1, this.indexCounter+2,
