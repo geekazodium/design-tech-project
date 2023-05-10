@@ -10,12 +10,15 @@ uniform vec3 vPosition;
 uniform mat4 mProjection;
 layout(location=0) in vec3 vertPosition;
 layout(location=1) in vec3 texPosition;
+layout(location=2) in vec3 light;
 
 out float vDepth;
+out vec3 fragLight;
 out vec2 fragTexPosition;
 
 void main(){
     vDepth = texPosition[2];
+    fragLight = light;
     fragTexPosition = vec2(texPosition);
     gl_Position = mProjection * mRotation * vec4(vertPosition - vPosition, 1.0);
 }`;
@@ -28,12 +31,13 @@ precision mediump float;
 uniform mediump sampler2DArray sampler;
 
 in vec2 fragTexPosition;
+in vec3 fragLight;
 in float vDepth;
 
 out vec4 fragColor;
 
 void main(){
-    fragColor = texture(sampler, vec3(fragTexPosition, vDepth));
+    fragColor = texture(sampler, vec3(fragTexPosition, vDepth)) * vec4(fragLight,1.0);
 }`;
 
 class TerrainRenderer extends Renderer{
@@ -59,6 +63,7 @@ class TerrainRenderer extends Renderer{
 
         this.positionAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'vertPosition');
         this.textureAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'texPosition');
+        this.brightnessAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'light');
 
         this.terrainTexture = gl.createTexture();
         this.texturePixelBufferObject = gl.createBuffer();
@@ -196,7 +201,7 @@ class TerrainRenderer extends Renderer{
         gl.useProgram(this.terrainRenderProgram);
     
         gl.enableVertexAttribArray(this.positionAttribLocation);
-
+        gl.enableVertexAttribArray(this.brightnessAttribLocation);
         gl.enableVertexAttribArray(this.textureAttribLocation);
 
         gl.uniformMatrix4fv(this.rotationUniformLocation, gl.FALSE, renderContext.rotationMatrix);
@@ -216,7 +221,7 @@ class TerrainRenderer extends Renderer{
                 3,
                 gl.FLOAT,
                 gl.FALSE,
-                6 * Float32Array.BYTES_PER_ELEMENT,
+                9 * Float32Array.BYTES_PER_ELEMENT,
                 0 
             );
             gl.vertexAttribPointer(
@@ -224,15 +229,23 @@ class TerrainRenderer extends Renderer{
                 3,
                 gl.FLOAT,
                 gl.FALSE,
-                6 * Float32Array.BYTES_PER_ELEMENT,
+                9 * Float32Array.BYTES_PER_ELEMENT,
                 3 * Float32Array.BYTES_PER_ELEMENT
+            );
+            gl.vertexAttribPointer(
+                this.brightnessAttribLocation,
+                3,
+                gl.FLOAT,
+                gl.FALSE,
+                9 * Float32Array.BYTES_PER_ELEMENT,
+                6 * Float32Array.BYTES_PER_ELEMENT
             );
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
 		    gl.drawElements(gl.TRIANGLES, bufferLength, gl.UNSIGNED_SHORT, 0);
         }
 
         gl.disableVertexAttribArray(this.positionAttribLocation);
-
+        gl.disableVertexAttribArray(this.brightnessAttribLocation);
         gl.disableVertexAttribArray(this.textureAttribLocation);
     }
     attachBufferBuilder(bufferBuilder){

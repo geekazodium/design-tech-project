@@ -20,6 +20,11 @@
             "index":3,
             "id":"log-side",
             "src":"./assets/terrain/log-side.png"
+        },
+        {
+            "index":4,
+            "id":"leaf-all",
+            "src":"./assets/terrain/leaf-all.png"
         }
     ]
 }

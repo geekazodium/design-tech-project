@@ -18,5 +18,11 @@
         "name":"log-block",
         "type":"dir-none",
         "default":"log-side"
+    },
+    {
+        "id":4,
+        "name":"leaf-block",
+        "type":"dir-none",
+        "default":"leaf-all"
     }
 ]

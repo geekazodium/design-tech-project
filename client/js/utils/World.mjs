@@ -54,15 +54,19 @@ class Chunk{
                         this.setBlockAt(x,y,z,2);
                     }
                 }
-                var treeNoise = perlinNoise.perlin((x+chunkX*16+0.5),(z+chunkZ*16+0.5));
-                var canTree = perlinNoise.perlin((x+chunkX*16+0.5)/32,(z+chunkZ*16+0.5)/32);
-                if(canTree>0){
-                    if(treeNoise>0.5){
-                        for (let treeHeight = 0; treeHeight < treeNoise*10; treeHeight++) {
-                            this.setBlockAt(x,height+treeHeight,z,3);
-                        }
-                    }
-                }
+                // var treeNoise = perlinNoise.perlin((x+chunkX*16+0.5),(z+chunkZ*16+0.5));
+                // var canTree = perlinNoise.perlin((x+chunkX*16+0.5)/32,(z+chunkZ*16+0.5)/32);
+                // if(canTree>0){
+                //     var treeHeight = 0;
+                //     if(treeNoise>0.5){
+                //         for (treeHeight = 0; treeHeight < treeNoise*10; treeHeight++) {
+                //             this.setBlockAt(x,height+treeHeight,z,3);
+                //         }
+                //         treeHeight += height;
+                //         this.setBlockAt(x,treeHeight,z,4);
+                //         this.setBlockAt(x-1,treeHeight,z,4);
+                //     }
+                // }
             }
         }
     }
