@@ -2,14 +2,22 @@ import { LayeredPerlinNoise, perlinNoise, terrainLayered } from "../../../common
 import { Vec3i } from "../../../common/Vec.mjs";
 
 class World{
-    /**
-     * 
-     * @param {Vec3i} size 
-     */
-    constructor(size,seed){
+    constructor(seed){
         this.seed = seed;
-        this.size = size;
         this.chunks = new Map();
+    }
+    generateArea(start,end){
+        const startX = start[0]<end[0]?start[0]:end[0];
+        const startZ = start[1]<end[1]?start[1]:end[1];;
+        const endX = start[0]>=end[0]?start[0]:end[0];
+        const endZ = start[1]>=end[1]?start[1]:end[1];
+        for(let chunkZ = startZ;chunkZ<=endZ;chunkZ++){
+            for(let chunkX = startX;chunkX<=endX;chunkX++){
+                const chunk = new Chunk();
+                this.chunks.set(this.getChunkId(chunkX,chunkZ),chunk);
+                chunk.generate(chunkX,chunkZ);
+            }
+        }
     }
     getChunkId(x,y){
         return x+","+y;
@@ -19,6 +27,9 @@ class World{
     }
     getChunkForPosition(x,z){
         return this.chunks.get(this.getChunkId(x>>4,z>>4));
+    }
+    getChunk(chunkX,chunkZ){
+        return this.chunks.get(this.getChunkId(chunkX,chunkZ));
     }
     setBlock(x,y,z){
         var x = parseInt(x);

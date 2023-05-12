@@ -1,20 +1,22 @@
 import { BufferBuilder } from "./BufferBuilder.mjs";
 import { BlockTextureMap, negX, negY, negZ, posX, posY, posZ } from "./render/BlockTextureMap.mjs";
 import { TextureAtlas } from "./render/TextureAtlas.mjs";
-import { Chunk } from "./utils/World.mjs";
+import { Chunk, World } from "./utils/World.mjs";
 
 const maxGlIndex = Math.pow(2,16);
 const renderDistance = 32;
 
-const chunks = [];
-for (let chunkX = 0; chunkX < renderDistance; chunkX++) {
-    chunks.push([]);
-    for(let chunkZ = 0; chunkZ < renderDistance; chunkZ++){
-        var chunk = new Chunk(chunkX,chunkZ);
-        chunk.generate(chunkX,chunkZ);
-        chunks[chunkX].push(chunk);
-    }
-}
+const world = new World(69420);
+world.generateArea([-16,-16],[16,16]);
+// const chunks = [];
+// for (let chunkX = 0; chunkX < renderDistance; chunkX++) {
+//     chunks.push([]);
+//     for(let chunkZ = 0; chunkZ < renderDistance; chunkZ++){
+//         var chunk = new Chunk(chunkX,chunkZ);
+//         chunk.generate(chunkX,chunkZ);
+//         chunks[chunkX].push(chunk);
+//     }
+// }
 
 class TerrainBufferBuilder extends BufferBuilder{
     /**
@@ -35,13 +37,13 @@ class TerrainBufferBuilder extends BufferBuilder{
         var tempVBOs = [[]];
         var tempIBOs = [[]];
 
-        for (let chunkX = 0; chunkX < renderDistance; chunkX++) {
-            for(let chunkZ = 0; chunkZ < renderDistance; chunkZ++){
-                const chunk = chunks[chunkX][chunkZ];
-                const chunkPX = (chunkX+1 < renderDistance)?chunks[chunkX+1][chunkZ]:undefined;
-                const chunkNX = (chunkX > 0)?chunks[chunkX-1][chunkZ]:undefined;
-                const chunkPZ = chunks[chunkX][chunkZ+1];
-                const chunkNZ = chunks[chunkX][chunkZ-1];
+        for (let chunkX = -16; chunkX <= 16; chunkX++) {
+            for(let chunkZ = -16; chunkZ <= 16; chunkZ++){
+                const chunk = world.getChunk(chunkX,chunkZ);
+                const chunkPX = world.getChunk(chunkX+1,chunkZ);
+                const chunkNX = world.getChunk(chunkX-1,chunkZ);
+                const chunkPZ = world.getChunk(chunkX,chunkZ+1);
+                const chunkNZ = world.getChunk(chunkX,chunkZ-1);
                 this.addChunkBuffer(chunk,chunkPX,chunkNX,chunkPZ,chunkNZ,chunkX,chunkZ,tempVBOs,tempIBOs);
                 if(this.built){
                     await this.resolveAfter(1);
