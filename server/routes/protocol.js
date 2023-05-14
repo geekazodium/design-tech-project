@@ -37,6 +37,9 @@ import("../../common/requests/LoginRequest.mjs").then(
 import("../../common/requests/SignupRequest.mjs").then(
     (module)=>{module.signupAccountRequestHandler.listen(router,{"keys":keys,"authHelper":authHelper});}
 );
+import("../../common/requests/CreateGameRequest.mjs").then(
+    (module)=>{module.createGameRequestHandler.listen(router,{"keys":keys,"authHelper":authHelper});}
+);
 
 module.exports = router;
 module.exports.maxWait = maxWait;

@@ -17,7 +17,6 @@ var docsRouter = require("./routes/docs");
 var commonRouter = require("./routes/common");
 var usersRouter = require('./routes/users');
 
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
