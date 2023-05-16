@@ -27,8 +27,8 @@ class CreateGameRequestHandler extends RequestHandler{
         return path;
     }
     createBuffer(packet){
-        var dataToAccess = this.encodeStringToArray(packet.dataToAccess);
-        return dataToAccess;
+        console.log(packet);
+        return this.encodeStringArgs(packet.join,packet.name);
     }
     async onResponse(bytes){
         return textDecoder.decode(bytes);
@@ -44,10 +44,15 @@ class CreateGameRequestHandler extends RequestHandler{
      * @returns 
      */
     async recieve(req,res,next,params){
-        var args = await this.readArgs(req);
+        var args = await this.readStringArgs(req);
         if(args === undefined)return;
+        console.log(args);
+        res.send();
     }
     //@ClientIgnoreEnd
+    createRequest(args){
+        return new CreateGameRequest({"join":args[0],"name":args[1]});
+    }
 }
 
 const createGameRequestHandler = new CreateGameRequestHandler();

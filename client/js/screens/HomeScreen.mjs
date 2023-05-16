@@ -3,6 +3,7 @@ import { IngameScreen } from "./IngameScreen.mjs";
 import { LoginScreen } from "./LoginScreen.mjs";
 import { MenuScreen } from "./MenuScreen.mjs";
 import { SignupScreen } from "./SignupScreen.mjs";
+import { TestGameProtocolScreen } from "./TestGameProtocolScreen.mjs";
 
 class HomeScreen extends MenuScreen{
     onExit(){
@@ -35,6 +36,11 @@ class HomeScreen extends MenuScreen{
             
         };
         this.lastClientAccount = undefined;
+
+        this.testProtocolButton = this.createButton(0,20,150,"test portocol");
+        this.testProtocolButton.onclick = event => {
+            client.setScreen(new TestGameProtocolScreen(this.renderDispatcher,this));
+        };
         this.accountButton.onclick = this.toLoginScreen;
     }
     setToSignedIn(){
