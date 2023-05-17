@@ -1,5 +1,5 @@
 var express = require('express');
-const { authHelper } = require("../Server.js");
+const { accountHandler } = require("../Server.js");
 const Cookies = require("cookies");
 
 var sha256;
@@ -19,26 +19,25 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/CookieAuth', async function(req, res, next) {
-    var cookies = new Cookies(req, res, { keys: keys });
-    var sessionCookie = cookies.get(authHelper.sessionCookieId, { signed: true });
-    var user = authHelper.getUser(sessionCookie);
+    const sessionCookie = accountHandler.getRequestAuthCookies(req,res,keys);
+    var user = accountHandler.getUser(sessionCookie);
     if(user === undefined){
-        authHelper.clearCookie(cookies);
+        accountHandler.clearCookie(cookies);
     }
     res.send(user);
 });
 
 import("../../common/requests/AccountInfoRequest.mjs").then(
-    module => {module.accountInfoRequestHandler.listen(router,{"keys":keys,"authHelper":authHelper});}
+    module => {module.accountInfoRequestHandler.listen(router,{"keys":keys,"authHelper":accountHandler});}
 )
 import("../../common/requests/LoginRequest.mjs").then(
-    (module)=>{module.loginAccountRequestHandler.listen(router,{"keys":keys,"authHelper":authHelper});}
+    (module)=>{module.loginAccountRequestHandler.listen(router,{"keys":keys,"authHelper":accountHandler});}
 );
 import("../../common/requests/SignupRequest.mjs").then(
-    (module)=>{module.signupAccountRequestHandler.listen(router,{"keys":keys,"authHelper":authHelper});}
+    (module)=>{module.signupAccountRequestHandler.listen(router,{"keys":keys,"authHelper":accountHandler});}
 );
 import("../../common/requests/CreateGameRequest.mjs").then(
-    (module)=>{module.createGameRequestHandler.listen(router,{"keys":keys,"authHelper":authHelper});}
+    (module)=>{module.createGameRequestHandler.listen(router,{"keys":keys,"accountHandler":accountHandler});}
 );
 
 module.exports = router;

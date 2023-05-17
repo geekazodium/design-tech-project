@@ -1,6 +1,6 @@
 //@ClientIgnoreStart
 import Cookies from "cookies";
-import { AuthHelper } from "../../server/AuthHandler.js";
+import { AccountHandler } from "../../server/AccountHandler.js";
 //@ClientIgnoreEnd
 
 import { RequestHandler } from "./RequestHandler.mjs";
@@ -40,12 +40,14 @@ class CreateGameRequestHandler extends RequestHandler{
      * @param {Response} res 
      * @param {*} next 
      * @param {Object} params 
-     * @param {AuthHelper} params.authHelper
+     * @param {AccountHandler} params.accountHandler
      * @returns 
      */
     async recieve(req,res,next,params){
         var args = await this.readStringArgs(req);
         if(args === undefined)return;
+        
+        params.accountHandler.createGame();
         console.log(args);
         res.send();
     }

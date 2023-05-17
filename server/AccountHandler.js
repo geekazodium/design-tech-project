@@ -1,8 +1,9 @@
+const Cookies = require("cookies");
 
 var sha256;
 import("../common/SHA-256.mjs").then((module)=>{sha256 = module.sha256;}); 
 
-class AuthHelper{
+class AccountHandler{
     constructor(){
         this.sessionCookieId = "session";
         this.users = new Map();
@@ -23,8 +24,16 @@ class AuthHelper{
         if(this.users.has(user))return false;
         var salt = this.encodeToB64(this._crypto_.randomBytes(66));
         var hash = sha256(password.concat(salt));
-        this.users.set(user,{"salt": salt,"hash": hash,"data":{"getHelp":"getHelp"}});
+        this.users.set(user,{"salt": salt,"hash": hash,"data":{
+            "currentGame":undefined
+        }});
         return true;
+    }
+    setGame(cookie){
+
+    }
+    createGame(cookie,settings){
+
     }
     login(user,password){
         if(!this.users.has(user))return false;
@@ -71,6 +80,11 @@ class AuthHelper{
         });
         return s.join("");
     }
+    getRequestAuthCookies(req,res,keys){
+        var cookies = new Cookies(req, res, { keys: keys });
+        var sessionCookie = cookies.get(this.sessionCookieId, { signed: true });
+        return sessionCookie;
+    }
 }
 
-exports.AuthHelper = AuthHelper;
+exports.AccountHandler = AccountHandler;

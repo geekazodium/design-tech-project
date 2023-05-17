@@ -1,6 +1,6 @@
 //@ClientIgnoreStart
 import Cookies from "cookies";
-import { AuthHelper } from "../../server/AuthHandler.js";
+import { AccountHandler } from "../../server/AccountHandler.js";
 //@ClientIgnoreEnd
 
 import { RequestHandler } from "./RequestHandler.mjs";
@@ -33,7 +33,7 @@ class AccountInfoRequestHandler extends RequestHandler{
      * @param {*} res 
      * @param {*} next 
      * @param {Object} params 
-     * @param {AuthHelper} params.authHelper
+     * @param {AccountHandler} params.authHelper
      * @returns 
      */
     async recieve(req,res,next,params){
