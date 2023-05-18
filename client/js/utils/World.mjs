@@ -1,15 +1,23 @@
-import { perlinNoise } from "../../../common/PerlinNoise.mjs";
+import { LayeredPerlinNoise, perlinNoise, terrainLayered } from "../../../common/PerlinNoise.mjs";
 import { Vec3i } from "../../../common/Vec.mjs";
 
 class World{
-    /**
-     * 
-     * @param {Vec3i} size 
-     */
-    constructor(size,seed){
+    constructor(seed){
         this.seed = seed;
-        this.size = size;
         this.chunks = new Map();
+    }
+    generateArea(start,end){
+        const startX = start[0]<end[0]?start[0]:end[0];
+        const startZ = start[1]<end[1]?start[1]:end[1];;
+        const endX = start[0]>=end[0]?start[0]:end[0];
+        const endZ = start[1]>=end[1]?start[1]:end[1];
+        for(let chunkZ = startZ;chunkZ<=endZ;chunkZ++){
+            for(let chunkX = startX;chunkX<=endX;chunkX++){
+                const chunk = new Chunk();
+                this.chunks.set(this.getChunkId(chunkX,chunkZ),chunk);
+                chunk.generate(chunkX,chunkZ);
+            }
+        }
     }
     getChunkId(x,y){
         return x+","+y;
@@ -19,6 +27,9 @@ class World{
     }
     getChunkForPosition(x,z){
         return this.chunks.get(this.getChunkId(x>>4,z>>4));
+    }
+    getChunk(chunkX,chunkZ){
+        return this.chunks.get(this.getChunkId(chunkX,chunkZ));
     }
     setBlock(x,y,z){
         var x = parseInt(x);
@@ -46,7 +57,7 @@ class Chunk{
     generate(chunkX,chunkZ){
         for (let x = 0; x < 16; x++) {
             for (let z = 0; z < 16; z++) {
-                var height = Math.floor((perlinNoise.perlin((x+chunkX*16)/16,(z+chunkZ*16)/16)+1)*22);
+                var height = Math.floor((terrainLayered.get((x+chunkX*16)/16,(z+chunkZ*16)/16)+1));
                 for(let y = 0; y<height;y++){
                     if(y==height-1){
                         this.setBlockAt(x,y,z,1);
@@ -54,11 +65,27 @@ class Chunk{
                         this.setBlockAt(x,y,z,2);
                     }
                 }
+                // var treeNoise = perlinNoise.perlin((x+chunkX*16+0.5),(z+chunkZ*16+0.5));
+                // var canTree = perlinNoise.perlin((x+chunkX*16+0.5)/32,(z+chunkZ*16+0.5)/32);
+                // if(canTree>0){
+                //     var treeHeight = 0;
+                //     if(treeNoise>0.5){
+                //         for (treeHeight = 0; treeHeight < treeNoise*10; treeHeight++) {
+                //             this.setBlockAt(x,height+treeHeight,z,3);
+                //         }
+                //         treeHeight += height;
+                //         this.setBlockAt(x,treeHeight,z,4);
+                //         this.setBlockAt(x-1,treeHeight,z,4);
+                //     }
+                // }
             }
         }
     }
     setBlockAt(x,y,z,id){
         this.blocks[this.getBlockPointer(x,y,z)]=id;
+    }
+    getBlockAtChunkCoords(x,y,z){
+        return this.blocks[this.getBlockPointer(x,y,z)];
     }
 }
 

@@ -92,7 +92,7 @@ class MenuScreen extends AbstractScreen{
      */
     styleAsButton(element,x,maxY,width){
         element.style.fontFamily = "math";
-        element.style.fontSize = "30px"
+        element.style.fontSize = "20px"
         element.style.top = "calc(50vh + "+maxY+"px)";
         element.style.left = "calc(50vw + "+(x-width/2)+"px)";
         element.style.width = width+"px";

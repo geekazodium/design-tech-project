@@ -69,7 +69,7 @@ class GameClient{
         this.buttonInputHandler.registerKeybind(this.downKey);
     }
     tick(){
-        var velocity = 0.05;
+        var velocity = 0.5;
         var forward = (this.forwardKey.isPressed+this.backwardKey.isPressed*-1)*velocity;
         var left =  (this.leftKey.isPressed+this.rightKey.isPressed*-1)*velocity;
         var up =  (this.upKey.isPressed+this.downKey.isPressed*-1)*velocity;

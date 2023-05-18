@@ -4,7 +4,13 @@ const textDecoder = new TextDecoder();
 const maxWait = 100;
 const maxSize = 256;
 
+const packetHandlers = new Map();
+
 class RequestHandler{
+    constructor(){
+        packetHandlers.set(this.getPath(),this);
+        console.log(this.getPath());
+    }
     getPath(){
         return "";
     }
@@ -13,6 +19,16 @@ class RequestHandler{
     }
     createBuffer(packet){
         return [];
+    }
+    encodeStringArgs(...args){
+        var buffer = [];
+        args.forEach(arg=>{
+            if(buffer.length>0){
+                buffer.push(0);
+            }
+            buffer = buffer.concat(this.encodeStringToArray(arg));
+        });
+        return buffer;
     }
     async onResponse(bytes){
 
@@ -94,14 +110,29 @@ class RequestHandler{
         }
         return buf;
     }
+    async readStringArgs(req){
+        var buf = await this.readArgs(req);
+        if(buf === undefined) return;
+        var args = [];
+        buf.forEach(element =>{
+            args.push(textDecoder.decode(new Uint8Array(element)));
+        });
+        return args;
+    }
     async recieve(req,res,next,params){
+        res.send();
     }
     listen(router,params){
+        /**
+         * @param {Response} res
+         */
         router.put(this.getPath(),(req,res,next)=>{
             this.recieve(req,res,next,params);
         })
     }
     //@ClientIgnoreEnd
+    createRequest(args){
+    }
 }
 
-export {RequestHandler};
+export {RequestHandler,packetHandlers};

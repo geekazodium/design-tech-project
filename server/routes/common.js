@@ -29,6 +29,7 @@ loadFile("/requests/LoginRequest.mjs");
 loadFile("/requests/RequestHandler.mjs");
 loadFile("/requests/SignupRequest.mjs");
 loadFile("/requests/AccountInfoRequest.mjs");
+loadFile("/requests/CreateGameRequest.mjs");
 loadFile("/PerlinNoise.mjs");
 loadFile("/Vec.mjs");
 loadFile("/SHA-256.mjs");

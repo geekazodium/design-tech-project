@@ -3,6 +3,7 @@ import { IngameScreen } from "./IngameScreen.mjs";
 import { LoginScreen } from "./LoginScreen.mjs";
 import { MenuScreen } from "./MenuScreen.mjs";
 import { SignupScreen } from "./SignupScreen.mjs";
+import { TestGameProtocolScreen } from "./TestGameProtocolScreen.mjs";
 
 class HomeScreen extends MenuScreen{
     onExit(){
@@ -19,14 +20,12 @@ class HomeScreen extends MenuScreen{
 
         this.testButton = this.createButton(0,-40,150,"Test Scene");
 
-        this.testButton.style.fontSize = "20px";
         this.testButton.onclick = (event)=>{
             client.setScreen(new IngameScreen(client.getScreenParams()));
         };
 
         this.accountButton = this.createButton(0,20,150,"have an account? log in!");
 
-        this.accountButton.style.fontSize = "20px";
         this.toLoginScreen = (event)=>{
             client.setScreen(new LoginScreen(this.renderDispatcher,this));
         };
@@ -35,6 +34,11 @@ class HomeScreen extends MenuScreen{
             
         };
         this.lastClientAccount = undefined;
+
+        this.testProtocolButton = this.createButton(0,50,150,"test portocol");
+        this.testProtocolButton.onclick = event => {
+            client.setScreen(new TestGameProtocolScreen(this.renderDispatcher,this));
+        };
         this.accountButton.onclick = this.toLoginScreen;
     }
     setToSignedIn(){

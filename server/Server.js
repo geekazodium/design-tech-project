@@ -4,10 +4,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-const { AuthHelper } = require('./AuthHandler');
+const { AccountHandler } = require('./AccountHandler');
 
-const authHelper = new AuthHelper();
-exports.authHelper = authHelper;
+const accountHandler = new AccountHandler();
+exports.accountHandler = accountHandler;
 var app = express();
 
 var Game = require("./Game").Game;
@@ -16,7 +16,6 @@ var protocolRouter = require("./routes/protocol");
 var docsRouter = require("./routes/docs");
 var commonRouter = require("./routes/common");
 var usersRouter = require('./routes/users');
-
 
 app.use(logger('dev'));
 app.use(express.json());
