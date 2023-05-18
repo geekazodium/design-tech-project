@@ -31,6 +31,7 @@ class CreateGameRequestHandler extends RequestHandler{
         return this.encodeStringArgs(packet.join,packet.name);
     }
     async onResponse(bytes){
+        alert( textDecoder.decode(bytes));
         return textDecoder.decode(bytes);
     }
     //@ClientIgnoreStart
@@ -46,14 +47,18 @@ class CreateGameRequestHandler extends RequestHandler{
     async recieve(req,res,next,params){
         var args = await this.readStringArgs(req);
         if(args === undefined)return;
-        
-        params.accountHandler.createGame();
-        console.log(args);
-        res.send();
+        var authUser = params.accountHandler.getRequestUser(req,res,params.keys);
+        var settings = this.createReqSettings(args);
+        var gameInfo = params.accountHandler.createGame(authUser,settings);
+        console.log(settings);
+        res.send(gameInfo);
     }
     //@ClientIgnoreEnd
+    createReqSettings(args){
+        return {"join":args[0],"name":args[1]}
+    }
     createRequest(args){
-        return new CreateGameRequest({"join":args[0],"name":args[1]});
+        return new CreateGameRequest(this.createReqSettings(args));
     }
 }
 

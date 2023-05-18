@@ -112,6 +112,7 @@ class RequestHandler{
     }
     async readStringArgs(req){
         var buf = await this.readArgs(req);
+        if(buf === undefined) return;
         var args = [];
         buf.forEach(element =>{
             args.push(textDecoder.decode(new Uint8Array(element)));
@@ -119,8 +120,12 @@ class RequestHandler{
         return args;
     }
     async recieve(req,res,next,params){
+        res.send();
     }
     listen(router,params){
+        /**
+         * @param {Response} res
+         */
         router.put(this.getPath(),(req,res,next)=>{
             this.recieve(req,res,next,params);
         })

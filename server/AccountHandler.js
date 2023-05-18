@@ -1,4 +1,5 @@
 const Cookies = require("cookies");
+const { Game } = require("./Game.js");
 
 var sha256;
 import("../common/SHA-256.mjs").then((module)=>{sha256 = module.sha256;}); 
@@ -8,6 +9,7 @@ class AccountHandler{
         this.sessionCookieId = "session";
         this.users = new Map();
         this.sessions = new Map();
+        this.activeGames = new Map();
         this._crypto_;
         if (typeof window === 'undefined'){
             import("crypto").then((mod)=>{
@@ -30,10 +32,20 @@ class AccountHandler{
         return true;
     }
     setGame(cookie){
-
+        
     }
-    createGame(cookie,settings){
-
+    createGame(user,settings){
+        var userData = this.users.get(user);
+        if(userData === undefined){
+            return "you are not logged in!";
+        }
+        if(userData.currentGame !== undefined){
+            return "you are currently in a game!";
+        }
+        var game = new Game(user,settings.name);
+        userData.currentGame = game;
+        this.activeGames.set(game.name,game);
+        return game.name;
     }
     login(user,password){
         if(!this.users.has(user))return false;
@@ -80,10 +92,23 @@ class AccountHandler{
         });
         return s.join("");
     }
+    /**
+     * @deprecated does not check cookie validity
+     * @returns 
+     */
     getRequestAuthCookies(req,res,keys){
         var cookies = new Cookies(req, res, { keys: keys });
         var sessionCookie = cookies.get(this.sessionCookieId, { signed: true });
         return sessionCookie;
+    }
+    getRequestUser(req,res,keys){
+        var cookies = new Cookies(req, res, { keys: keys });
+        var sessionCookie = cookies.get(this.sessionCookieId, { signed: true });
+        var user = this.getUser(sessionCookie);
+        if(user === undefined){
+            this.clearCookie(cookies);
+        }
+        return user;
     }
 }
 

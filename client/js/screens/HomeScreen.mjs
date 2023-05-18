@@ -20,14 +20,12 @@ class HomeScreen extends MenuScreen{
 
         this.testButton = this.createButton(0,-40,150,"Test Scene");
 
-        this.testButton.style.fontSize = "20px";
         this.testButton.onclick = (event)=>{
             client.setScreen(new IngameScreen(client.getScreenParams()));
         };
 
         this.accountButton = this.createButton(0,20,150,"have an account? log in!");
 
-        this.accountButton.style.fontSize = "20px";
         this.toLoginScreen = (event)=>{
             client.setScreen(new LoginScreen(this.renderDispatcher,this));
         };
@@ -37,7 +35,7 @@ class HomeScreen extends MenuScreen{
         };
         this.lastClientAccount = undefined;
 
-        this.testProtocolButton = this.createButton(0,20,150,"test portocol");
+        this.testProtocolButton = this.createButton(0,50,150,"test portocol");
         this.testProtocolButton.onclick = event => {
             client.setScreen(new TestGameProtocolScreen(this.renderDispatcher,this));
         };

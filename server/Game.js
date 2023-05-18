@@ -2,11 +2,12 @@ const WAITING_FOR_START = 0;
 const GAME_ENDED = 1;
 const MAX_TIME = 1000 * 60 * 30;
 class Game{
-    constructor(hostPlayer){
+    constructor(hostPlayer,name){
         this.timeAwake = 0;
         this.phase = WAITING_FOR_START;
         this.players = [hostPlayer];
         this.hostPlayer = hostPlayer;
+        this.name = name;
         this.chat = new Array();
         this.timerLoop = setInterval(()=>{
             this.timeAwake++;
