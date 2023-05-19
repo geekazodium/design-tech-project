@@ -4,6 +4,16 @@ import { Vec3i } from "../../../common/Vec.mjs";
 class World{
     constructor(seed){
         this.seed = seed;
+        var n = this.seed%100;
+        this.seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+        this.noiseSource = new LayeredPerlinNoise(
+            {scale:10.5,x:1+n,y:-2,weight:35,bias:0.5},
+            {scale:15.5,x:10,y:0,weight:50,bias:0.5},
+            {scale:14.72,x:2,y:6,weight:10,bias:0},
+            {scale:2,x:0,y:19,weight:5,bias:0},
+            {scale:2,x:7.7,y:-1.5,weight:5,bias:0},
+            //{scale:0.5,x:29,y:0,weight:2,bias:0}
+        );
         this.chunks = new Map();
     }
     generateArea(start,end){
@@ -15,7 +25,7 @@ class World{
             for(let chunkX = startX;chunkX<=endX;chunkX++){
                 const chunk = new Chunk();
                 this.chunks.set(this.getChunkId(chunkX,chunkZ),chunk);
-                chunk.generate(chunkX,chunkZ);
+                chunk.generate(chunkX,chunkZ,this.noiseSource);
             }
         }
     }
@@ -54,10 +64,10 @@ class Chunk{
         if(z>=chunkLZ)return;
         return x + chunkLX*z + chunkLX*chunkLZ*y;
     }
-    generate(chunkX,chunkZ){
+    generate(chunkX,chunkZ,noiseSource){
         for (let x = 0; x < 16; x++) {
             for (let z = 0; z < 16; z++) {
-                var height = Math.floor((terrainLayered.get((x+chunkX*16)/16,(z+chunkZ*16)/16)+1));
+                var height = Math.floor((noiseSource.get((x+chunkX*16)/16,(z+chunkZ*16)/16)+1));
                 for(let y = 0; y<height;y++){
                     if(y==height-1){
                         this.setBlockAt(x,y,z,1);
