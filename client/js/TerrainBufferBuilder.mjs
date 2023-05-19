@@ -7,7 +7,7 @@ const maxGlIndex = Math.pow(2,16);
 const renderDistance = 32;
 
 const world = new World(69420);
-world.generateArea([-16,-16],[16,16]);
+world.generateArea([-12,-12],[12,12]);
 // const chunks = [];
 // for (let chunkX = 0; chunkX < renderDistance; chunkX++) {
 //     chunks.push([]);
@@ -37,8 +37,8 @@ class TerrainBufferBuilder extends BufferBuilder{
         var tempVBOs = [[]];
         var tempIBOs = [[]];
 
-        for (let chunkX = -16; chunkX <= 16; chunkX++) {
-            for(let chunkZ = -16; chunkZ <= 16; chunkZ++){
+        for (let chunkX = -12; chunkX <= 12; chunkX++) {
+            for(let chunkZ = -12; chunkZ <= 12; chunkZ++){
                 const chunk = world.getChunk(chunkX,chunkZ);
                 const chunkPX = world.getChunk(chunkX+1,chunkZ);
                 const chunkNX = world.getChunk(chunkX-1,chunkZ);

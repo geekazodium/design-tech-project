@@ -71,6 +71,48 @@ class MenuScreen extends AbstractScreen{
      * @param {HTMLElement} element the html element to style
      */
     styleAsTitle(element,maxY){ 
+        stylingHelper.styleAsTitle(element,maxY);
+    }
+    /**
+     * @description styles an html element in *button* form. This exists because I 
+     * was too lasy to use a css file. also creates some flexibility in being 
+     * able to create elements with slightly different css while avoiding the 
+     * suffering that is the actual stylesheet
+     * @param {HTMLElement} element the html element to style
+     * @param {Number} x x position of the center of the element, relative to the center of the screen
+     * @param {Number} maxY y position of the top of the element, relative to the center of the screen
+     * @param {Number} width the width of the button
+     */
+    styleAsButton(element,x,maxY,width){
+        stylingHelper.styleAsButton(element,x,maxY,width);
+    }
+    /**
+     * @description styles an html element in *field* form. This exists because I 
+     * was too lasy to use a css file. also creates some flexibility in being 
+     * able to create elements with slightly different css while avoiding the 
+     * suffering that is the actual stylesheet
+     * @param {HTMLElement} element the html element to style
+     */
+    styleAsField(element){
+        stylingHelper.styleAsField(element);
+    }
+    usernameInvalid(usernameInput){
+        return (
+            usernameInput.length<3||
+            usernameInput.length>16
+        );
+    }
+}
+
+class StylingHelper{
+    /**
+     * @description styles an html element in *title* form. This exists because I 
+     * was too lasy to use a css file. also creates some flexibility in being 
+     * able to create elements with slightly different css while avoiding the 
+     * suffering that is the actual stylesheet
+     * @param {HTMLElement} element the html element to style
+     */
+    styleAsTitle(element,maxY){ 
         element.style.fontFamily = "math";
         element.style.fontSize = "40px"
         element.style.top = "calc(50vh + "+maxY+"px)";
@@ -112,12 +154,8 @@ class MenuScreen extends AbstractScreen{
         element.style.textAlign = "left";
         element.style.width = "calc(100% - 8px)";
     }
-    usernameInvalid(usernameInput){
-        return (
-            usernameInput.length<3||
-            usernameInput.length>16
-        );
-    }
 }
 
-export {MenuScreen,escapeKeybind,initMenuKeybinds};
+const stylingHelper = new StylingHelper();
+
+export {MenuScreen,escapeKeybind,initMenuKeybinds,stylingHelper};
