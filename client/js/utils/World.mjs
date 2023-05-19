@@ -8,7 +8,7 @@ class World{
     }
     generateArea(start,end){
         const startX = start[0]<end[0]?start[0]:end[0];
-        const startZ = start[1]<end[1]?start[1]:end[1];;
+        const startZ = start[1]<end[1]?start[1]:end[1];
         const endX = start[0]>=end[0]?start[0]:end[0];
         const endZ = start[1]>=end[1]?start[1]:end[1];
         for(let chunkZ = startZ;chunkZ<=endZ;chunkZ++){
