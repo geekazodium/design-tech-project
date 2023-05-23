@@ -27,7 +27,8 @@ class AccountHandler{
         var salt = this.encodeToB64(this._crypto_.randomBytes(66));
         var hash = sha256(password.concat(salt));
         this.users.set(user,{"salt": salt,"hash": hash,"data":{
-            "currentGame":undefined
+            "currentGame":undefined,
+            "name":user
         }});
         return true;
     }

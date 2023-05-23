@@ -4,8 +4,8 @@ import { IngameScreen } from "./IngameScreen.mjs";
 import { MenuScreen, stylingHelper } from "./MenuScreen.mjs";
 
 class GameLobbyScreen extends IngameScreen{
-    constructor(renderDispatcher){
-        super(renderDispatcher);
+    constructor(renderDispatcher,parent){
+        super(renderDispatcher,parent);
     }
     onSet(){
         super.onSet();
@@ -17,8 +17,36 @@ class GameLobbyScreen extends IngameScreen{
         this.title.innerText = "ThisThingy";
         stylingHelper.styleAsTitle(this.title,-125);
 
-        this.renderDispatcher.camera.teleportTo(0,85,0);
-        this.renderDispatcher.camera.setRotation(0.4,Math.PI/4);
+        this.viewpointRotation = 0;
+        this.viewpointDistance = 100;
+
+        this.renderDispatcher.camera.canMove = false;
+        this.renderDispatcher.camera.canReorient = false;
+
+        this.accountLabel = document.createElement("h2");
+        this.div.append(this.accountLabel);
+        this.accountLabel.innerText = client.accountInfo.name;
+        stylingHelper.styleAsTitle(this.accountLabel);
+        this.accountLabel.style.left = "10px";
+        this.accountLabel.style.top = "calc(100vh - 60px)";
+        this.accountLabel.style.fontSize = "23px";
+        this.accountLabel.style.textAlign = "left";
+
+    }
+    animateCameraOrbit(){
+        this.renderDispatcher.camera.teleportTo(-Math.sin(this.viewpointRotation)*this.viewpointDistance,100,Math.cos(this.viewpointRotation)*this.viewpointDistance);
+        this.renderDispatcher.camera.forceRotation(0.3,this.viewpointRotation);
+        this.viewpointRotation = (this.viewpointRotation+0.01)%(Math.PI*2);
+    }
+    onExit(){
+        this.div.remove();
+        super.onExit();
+        this.renderDispatcher.camera.canMove = true;
+        this.renderDispatcher.camera.canReorient = true;
+    }
+    onAnimationFrame(){
+        super.onAnimationFrame();
+        this.animateCameraOrbit();
     }
     createField(x,maxY,width,text){
         var fieldDiv = document.createElement("div");

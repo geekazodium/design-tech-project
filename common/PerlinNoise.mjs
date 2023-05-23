@@ -13,6 +13,22 @@ class LayeredPerlinNoise{
         });
         return out;
     }
+
+    shiftLayers(seed){
+        var s = seed;
+        this.layers.forEach(layer =>{
+            var n = s%100;
+            s = this.nextRandom(s);
+            layer.x+=n-50;
+            var n = s%100;
+            s = this.nextRandom(s);
+            layer.y+=n-50;
+        })
+    }
+
+    nextRandom(n){
+        return (n * 1103515245 + 12345) & 0x7fffffff;
+    }
 }
 
 class PerlinNoise{

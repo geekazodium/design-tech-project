@@ -22,7 +22,7 @@ class HomeScreen extends MenuScreen{
         this.testButton = this.createButton(0,-40,150,"Test Scene");
 
         this.testButton.onclick = (event)=>{
-            client.setScreen(new GameLobbyScreen(client.getScreenParams()));
+            client.setScreen(new GameLobbyScreen(client.getScreenParams(),this));
         };
 
         this.accountButton = this.createButton(0,-5,150,"have an account? log in!");

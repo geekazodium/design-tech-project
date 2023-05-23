@@ -4,6 +4,7 @@ import * as Vec3 from "./../../libraries/esm/vec3.js";
 class Camera{
     constructor(canvas,mouseInputHandler){
         this.canReorient = true;
+        this.canMove = true;
         this.interfaceHelper = new InterfaceHelper(canvas,this);
         this.position = new Float32Array(3);
         this.pitch = 0;
@@ -23,12 +24,15 @@ class Camera{
         }
     }
     setRotation(pitch,yaw){
-        if(this.canReorient){
-            this.pitch = clamp(pitch,-Math.PI/2,Math.PI/2);
-            this.yaw = yaw;
-        }
+        if(!this.canReorient)return;
+        this.forceRotation(pitch,yaw);
+    }
+    forceRotation(pitch,yaw){
+        this.pitch = clamp(pitch,-Math.PI/2,Math.PI/2);
+        this.yaw = yaw;
     }
     move(x,y,z){
+        if(!this.canMove)return;
         this.position[0] += x;
         this.position[1] += y;
         this.position[2] += z;

@@ -5,8 +5,8 @@ import { Keybind } from "./Keybind.mjs";
 import { MouseInputHandler } from "./MouseInputHandler.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";
 import { HomeScreen } from "./screens/HomeScreen.mjs";
-import { initMenuKeybinds } from "./screens/MenuScreen.mjs";
 import { AuthHelper } from "./AuthHelper.mjs";
+import { initMenuKeybinds } from "./screens/AbstractScreen.mjs";
 
 class GameClient{
     main(){
@@ -25,13 +25,18 @@ class GameClient{
             stop();
             return;
         }
-        this.authHelper.getAccountInfo("help");
         initMenuKeybinds();
+        this.updateGeneralAccountInfo();
         this.setScreen(new HomeScreen(this.renderDispatcher));
         this.initKeybinds();
         this.loop = setInterval(()=>{this.tick();},10);
         document.body.style.visibility = "visible";
         document.body.style.backgroundColor = "#ffffff00";
+    }
+    async updateGeneralAccountInfo(){
+        var jsonText = await this.authHelper.getAccountInfo("general");
+        if(jsonText.length<=0)return;
+        this.accountInfo = JSON.parse(jsonText);
     }
     setScreen(screen){
         if(this.screen!=undefined)this.screen.onExit();

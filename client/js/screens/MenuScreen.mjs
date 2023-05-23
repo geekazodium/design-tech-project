@@ -1,28 +1,16 @@
 import { client } from "../ClientMain.mjs";
 import { Keybind } from "../Keybind.mjs";
 import { RenderDispatcher } from "../RenderDispatcher.mjs";
+import { BlankRenderer } from "../render/BlankBackgroundRenderer.mjs";
 import { AbstractScreen } from "./AbstractScreen.mjs";
 import { IngameScreen } from "./IngameScreen.mjs";
 
-var escapeKeybind;
-function initMenuKeybinds(){
-    escapeKeybind = new Keybind("Escape");
-    client.buttonInputHandler.registerKeybind(escapeKeybind);
-}
-
 class MenuScreen extends AbstractScreen{
     constructor(renderDispatcher,parent){
-        super(renderDispatcher);
-        this.parent = parent;
-    }
-    onAnimationFrame(){
-        if(escapeKeybind.wasPressed()){
-            if(this.parent === undefined)return;
-            client.setScreen(this.parent);
-        }
+        super(renderDispatcher,parent);
     }
     onSet(){
-        this.renderDispatcher.initRenderers([]);
+        this.renderDispatcher.initRenderers([new BlankRenderer()]);
         client.mouseInputHandler.canLock = false;
         this.createMenuItems();
     }
@@ -54,6 +42,7 @@ class MenuScreen extends AbstractScreen{
         textOverlay.style.marginTop = "6px";
         textOverlay.style.zIndex = 1;
         textOverlay.style.pointerEvents = "none";
+
         return field;
     }
     createButton(x,maxY,width,text){
@@ -158,4 +147,4 @@ class StylingHelper{
 
 const stylingHelper = new StylingHelper();
 
-export {MenuScreen,escapeKeybind,initMenuKeybinds,stylingHelper};
+export {MenuScreen,stylingHelper};

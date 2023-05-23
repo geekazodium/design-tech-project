@@ -4,16 +4,15 @@ import { Vec3i } from "../../../common/Vec.mjs";
 class World{
     constructor(seed){
         this.seed = seed;
-        var n = this.seed%100;
-        this.seed = (seed * 1103515245 + 12345) & 0x7fffffff;
         this.noiseSource = new LayeredPerlinNoise(
-            {scale:10.5,x:1+n,y:-2,weight:35,bias:0.5},
+            {scale:10.5,x:1,y:-2,weight:35,bias:0.5},
             {scale:15.5,x:10,y:0,weight:50,bias:0.5},
             {scale:14.72,x:2,y:6,weight:10,bias:0},
             {scale:2,x:0,y:19,weight:5,bias:0},
             {scale:2,x:7.7,y:-1.5,weight:5,bias:0},
             //{scale:0.5,x:29,y:0,weight:2,bias:0}
         );
+        this.noiseSource.shiftLayers(seed);
         this.chunks = new Map();
     }
     generateArea(start,end){
