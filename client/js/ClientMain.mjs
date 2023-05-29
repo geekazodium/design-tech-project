@@ -4,30 +4,39 @@ import { Camera } from "./render/Camera.mjs";
 import { Keybind } from "./Keybind.mjs";
 import { MouseInputHandler } from "./MouseInputHandler.mjs";
 import { RenderDispatcher } from "./RenderDispatcher.mjs";
-import { Packets } from "../../common/Packets.mjs";
-import { RequestConnectionC2SPacket } from "/common/C2S/RequestConnectionC2SPacket.mjs";
-import { RegisterAccountC2SPacket } from "../../common/C2S/RegisterAccountC2SPacket.mjs";
-import { LoginScreen } from "./screens/LoginScreen.mjs";
-import { IngameScreen } from "./screens/IngameScreen.mjs";
+import { HomeScreen } from "./screens/HomeScreen.mjs";
+import { AuthHelper } from "./AuthHelper.mjs";
+import { initMenuKeybinds } from "./screens/AbstractScreen.mjs";
 
 class GameClient{
     main(){
         this.screen = undefined;
-        this.clientPacketHandler = new Packets();
+        this.authHelper = new AuthHelper();
         this.displaySurface = document.getElementById("main-interface");
         this.mouseInputHandler = new MouseInputHandler(this.displaySurface);
         this.buttonInputHandler = new ButtonHandler();
 		this.camera = new Camera(this.displaySurface,this.mouseInputHandler);
         this.renderDispatcher = new RenderDispatcher(this.displaySurface,this.camera);
+        this.renderDispatcher.preRender = ()=>{
+            if(this.screen === undefined)return;
+            this.screen.onAnimationFrame();
+        }
         if(!this.renderDispatcher.init){
             stop();
             return;
         }
-        this.setScreen(new LoginScreen(this.renderDispatcher));
+        initMenuKeybinds();
+        this.updateGeneralAccountInfo();
+        this.setScreen(new HomeScreen(this.renderDispatcher));
         this.initKeybinds();
         this.loop = setInterval(()=>{this.tick();},10);
         document.body.style.visibility = "visible";
         document.body.style.backgroundColor = "#ffffff00";
+    }
+    async updateGeneralAccountInfo(){
+        var jsonText = await this.authHelper.getAccountInfo("general");
+        if(jsonText.length<=0)return;
+        this.accountInfo = JSON.parse(jsonText);
     }
     setScreen(screen){
         if(this.screen!=undefined)this.screen.onExit();
@@ -44,40 +53,6 @@ class GameClient{
     }
     getAssetLoader(){
         return assetLoader;
-    }
-    /**
-     * 
-     * @param {String} username 
-     * @param {String} password 
-     */
-    async registerAccount(username,password){
-        try{
-            var packet = new RegisterAccountC2SPacket();
-            packet.setUserName(username);
-            packet.setPassword(password);
-            var bytes = await this.clientPacketHandler.sendClient(packet);
-            if(bytes[0] == 115) return await this.login(username,password);
-            else throw new Error("failed to create account");
-        }catch(err){
-            return err;
-        }
-    }
-    /**
-     * 
-     * @param {String} username 
-     * @param {String} password 
-     */
-    async login(username,password){
-        try{
-            var packet = new RequestConnectionC2SPacket();
-            packet.setUserName(username);
-            packet.setPassword(password);
-            var bytes = await this.clientPacketHandler.sendClient(packet);
-            if(bytes[0] == 115) return "success!";
-            else throw new Error("failed to log in");
-        }catch(err){
-            return err;
-        }
     }
     /**
      * @description SLOPPY CODE TO GET CAMERA MOVEMENT WORKING,
@@ -99,7 +74,7 @@ class GameClient{
         this.buttonInputHandler.registerKeybind(this.downKey);
     }
     tick(){
-        var velocity = 0.05;
+        var velocity = 0.5;
         var forward = (this.forwardKey.isPressed+this.backwardKey.isPressed*-1)*velocity;
         var left =  (this.leftKey.isPressed+this.rightKey.isPressed*-1)*velocity;
         var up =  (this.upKey.isPressed+this.downKey.isPressed*-1)*velocity;

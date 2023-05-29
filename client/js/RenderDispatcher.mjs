@@ -5,8 +5,9 @@ import { TerrainRenderer } from "./render/TerrainRenderer.mjs";
 
 class RenderDispatcher{
     constructor(canvas,camera){
-        this.rebuildTimer = 0;
+        this.rebuildTimer = 20;
         this.init = false;
+        this.preRender = ()=>{};
         this.canvas = canvas;
         if(!this.updateCanvasContext()){
             return;
@@ -36,12 +37,9 @@ class RenderDispatcher{
         this.renderersIdMap = idMap;
     }
     getContext(canvas){
-        let ctx = canvas.getContext("webgl");
+        let ctx = canvas.getContext("webgl2");
         if(ctx)return ctx;
-        console.warn("browser does not support webgl, attempting to fallback on experimental");
-        ctx = canvas.getContext("experimental-webgl");
-        if(ctx)return ctx;
-        console.error("browser does not support experimental webgl, shutting down...");
+        console.error("browser does not support webgl2");
         return false;
     }
     attachBufferBuilder(bufferBuilder,rendererId,key){
@@ -49,11 +47,12 @@ class RenderDispatcher{
         this.renderersIdMap.get(rendererId).attachBufferBuilder(bufferBuilder);
     }
     async rebuildBuffers(ctx){
-        this.bufferBuilders.forEach((builder,key)=>{
+        this.bufferBuilders.forEach(async (builder,key)=>{
             builder.rebuild(ctx);
         });
     }
     render(timeStamp){
+        this.preRender();
         this.camera.update();
         this.renderContext.update(this.canvas,this.camera);
         this.renderers.forEach((renderer)=>{
@@ -61,7 +60,7 @@ class RenderDispatcher{
         });
         this.rebuildTimer--;
         if(this.rebuildTimer<=0){
-            this.rebuildTimer = 100;
+            this.rebuildTimer = 60;
             this.rebuildBuffers(this.ctx);
         }
         window.requestAnimationFrame((time)=>{this.render(time);});

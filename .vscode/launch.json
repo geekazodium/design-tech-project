@@ -9,6 +9,12 @@
             "request": "launch",
             "name": "open webpage",
             "url": "http://localhost:3000"
+        },
+        {
+            "command": "node node_modules/nodemon/bin/nodemon.js ./bin/www",
+            "name": "launch nodemon",
+            "request": "launch",
+            "type": "node-terminal"
         }
     ]
 }

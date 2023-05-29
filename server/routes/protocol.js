@@ -1,49 +1,45 @@
-var packets = undefined;
-import("../../common/Packets.mjs").then((module)=>{packets = new module.Packets();}); 
 var express = require('express');
-const { authHelper } = require("../Server.js");
+const { accountHandler } = require("../Server.js");
+const Cookies = require("cookies");
+
+var sha256;
+import("../../common/SHA-256.mjs").then((module)=>{
+    sha256 = module.sha256; 
+    keys = [sha256('GeekaTheDepressed')];
+}); 
+
 var router = express.Router();
 
-function resolveAfter(time) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve();
-        }, time);
-    });
-}
+const maxWait = 100;
+const maxSize = 128;
 
-async function registerServerListeners(){
-    while(packets === undefined || authHelper === undefined){
-        await resolveAfter(90);
-    }
-    packets.registerListener(2,(packet,res)=>{
-        if(authHelper.signUp(packet.username,packet.password)){
-            res.send("success");
-            return;
-        }
-        res.send("failed");
-    });
-    packets.registerListener(1,(packet,res)=>{
-        if(authHelper.login(packet.username,packet.password)){
-            res.send("success");
-            return;
-        }
-        res.send("failed");
-    });
-}
-
+var keys;
 router.get('/', function(req, res, next) {
     res.send();
 });
 
-router.put('/',async function(req, res, next){
-    while(!req.complete){
-        await resolveAfter(100);
+router.get('/CookieAuth', async function(req, res, next) {
+    const sessionCookie = accountHandler.getRequestAuthCookies(req,res,keys);
+    var user = accountHandler.getUser(sessionCookie);
+    if(user === undefined){
+        accountHandler.clearCookie(cookies);
     }
-    var buffer = req.read();
-    if(!buffer)return;
-    packets.recieveServer(buffer,res);
+    res.send(user);
 });
 
+import("../../common/requests/AccountInfoRequest.mjs").then(
+    module => {module.accountInfoRequestHandler.listen(router,{"keys":keys,"authHelper":accountHandler});}
+)
+import("../../common/requests/LoginRequest.mjs").then(
+    (module)=>{module.loginAccountRequestHandler.listen(router,{"keys":keys,"authHelper":accountHandler});}
+);
+import("../../common/requests/SignupRequest.mjs").then(
+    (module)=>{module.signupAccountRequestHandler.listen(router,{"keys":keys,"authHelper":accountHandler});}
+);
+import("../../common/requests/CreateGameRequest.mjs").then(
+    (module)=>{module.createGameRequestHandler.listen(router,{"keys":keys,"accountHandler":accountHandler});}
+);
+
 module.exports = router;
-registerServerListeners();
+module.exports.maxWait = maxWait;
+module.exports.maxSize = maxSize;

@@ -16,5 +16,10 @@
         "src":"./assets/terrain/terrainAssets.json",
         "target":"terrainAssets",
         "type":"textureRefsheet"
+    },
+    {
+        "id":"block-textures",
+        "type":"blockTextureFile",
+        "src":"./assets/terrain/blocks.json"
     }
 ]

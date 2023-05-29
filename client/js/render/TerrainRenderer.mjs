@@ -1,99 +1,50 @@
 import { TerrainBufferBuilder } from "../TerrainBufferBuilder.mjs";
 import { Renderer } from "./Renderer.mjs";
 
-const BOX_VERTICES = 
-[ // x, y, z,     u, v
-    // Top
-    -1.0, 1.0, -1.0,    0, 0,
-    -1.0, 1.0, 1.0,     0, 1/8,
-    1.0, 1.0, 1.0,      1/8, 1/8,
-    1.0, 1.0, -1.0,     1/8, 0,
-
-    // Left
-    -1.0, 1.0, 1.0,     0, 0,
-    -1.0, -1.0, 1.0,    0, 1/8,
-    -1.0, -1.0, -1.0,   1/8, 1/8,
-    -1.0, 1.0, -1.0,    1/8, 0,
-
-    // Right
-    1.0, 1.0, 1.0,      0, 0,
-    1.0, -1.0, 1.0,     0, 1/8,
-    1.0, -1.0, -1.0,    1/8, 1/8,
-    1.0, 1.0, -1.0,     1/8, 0,
-
-    // Front
-    1.0, 1.0, 1.0,      0, 0,
-    1.0, -1.0, 1.0,     0, 1/8,
-    -1.0, -1.0, 1.0,    1/8, 1/8,
-    -1.0, 1.0, 1.0,     1/8, 0,
-
-    // Back
-    1.0, 1.0, -1.0,     0, 0,
-    1.0, -1.0, -1.0,    0, 1/8,
-    -1.0, -1.0, -1.0,   1/8, 1/8,
-    -1.0, 1.0, -1.0,    1/8, 0,
-
-    // Bottom
-    -1.0, -1.0, -1.0,   0, 0,
-    -1.0, -1.0, 1.0,    0, 1/8,
-    1.0, -1.0, 1.0,     1/8, 1/8,
-    1.0, -1.0, -1.0,    1/8, 0
-];
-
-const BOX_INDICES = [
-    // Top
-    0, 1, 2,
-    0, 2, 3,
-
-    // Left
-    5, 4, 6,
-    6, 4, 7,
-
-    // Right
-    8, 9, 10,
-    8, 10, 11,
-
-    // Front
-    13, 12, 14,
-    15, 14, 12,
-
-    // Back
-    16, 17, 18,
-    16, 18, 19,
-
-    // Bottom
-    21, 20, 22,
-    22, 20, 23
-];
-
 const TERRAIN_VERTEX = 
-`precision mediump float;
+`#version 300 es
+precision mediump float;
 
-attribute vec3 vertPosition;
-attribute vec2 texPosition;
 uniform mat4 mRotation;
 uniform vec3 vPosition;
 uniform mat4 mProjection;
+layout(location=0) in vec3 vertPosition;
+layout(location=1) in vec3 texPosition;
+layout(location=2) in vec3 light;
 
-varying vec2 fragTexPosition;
+out float vDepth;
+out vec3 fragLight;
+out vec2 fragTexPosition;
 
 void main(){
-    fragTexPosition = texPosition;
+    vDepth = texPosition[2];
+    fragLight = light;
+    fragTexPosition = vec2(texPosition);
     gl_Position = mProjection * mRotation * vec4(vertPosition - vPosition, 1.0);
 }`;
 
 const TERRAIN_FRAGMENT =
-`precision mediump float;
+`#version 300 es
 
-varying vec2 fragTexPosition;
+precision mediump float;
 
-uniform sampler2D sampler;
+uniform mediump sampler2DArray sampler;
+
+in vec2 fragTexPosition;
+in vec3 fragLight;
+in float vDepth;
+
+out vec4 fragColor;
 
 void main(){
-    gl_FragColor = texture2D(sampler, fragTexPosition);
+    fragColor = texture(sampler, vec3(fragTexPosition, vDepth)) * vec4(fragLight,1.0);
 }`;
 
 class TerrainRenderer extends Renderer{
+    /**
+     * 
+     * @param {WebGL2RenderingContext} gl 
+     */
     constructor(gl){
         super(1,"terrain");
 
@@ -107,26 +58,113 @@ class TerrainRenderer extends Renderer{
         this.projectionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'mProjection');
         this.positionUniformLocation = gl.getUniformLocation(this.terrainRenderProgram, 'vPosition');
 
-        this.terrainVBO = gl.createBuffer();
-        this.terrainIBO = gl.createBuffer();
-        this.updateTerrainData(gl,BOX_VERTICES,BOX_INDICES);
+        this.terrainVBOs = new Array();
+        this.terrainIBOs = new Array();
 
         this.positionAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'vertPosition');
         this.textureAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'texPosition');
+        this.brightnessAttribLocation = gl.getAttribLocation(this.terrainRenderProgram, 'light');
 
         this.terrainTexture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, this.terrainTexture);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        var img = this.textureAtlas;
-        gl.texImage2D(
-            gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,
-            gl.UNSIGNED_BYTE,
-            img
-	    );
-	    gl.bindTexture(gl.TEXTURE_2D, null);
+        this.texturePixelBufferObject = gl.createBuffer();
+        var img = this.convertToArray(this.textureAtlas);
+
+        this.bindTextureAtlas(gl,this.texturePixelBufferObject,img,this.terrainTexture);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY,null);
+    }
+    /**
+     * 
+     * @param {WebGL2RenderingContext} gl 
+     * @param {*} pbo (pointer, blank buffer)
+     * @param {Uint8Array} imageData 
+     * @param {*} texture (pointer, blank glTexture)
+     */
+    bindTextureAtlas(gl,pbo,imageData,texture){
+
+        const textureWidth = 16;
+        const textureHeight = 16;
+        const newLineAt = 8;
+
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
+
+        // Step 2: allocate space on the GPU for your texture data
+        const totalTextures = imageData.length/4/textureHeight/textureWidth;
+        gl.texStorage3D(
+            gl.TEXTURE_2D_ARRAY, 
+            4, 
+            gl.RGBA8, 
+            textureWidth,
+            textureHeight,
+            totalTextures
+        );
+
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        // Step 3: create a PBO
+        gl.bindBuffer(gl.PIXEL_UNPACK_BUFFER, pbo);
+        gl.bufferData(gl.PIXEL_UNPACK_BUFFER, imageData, gl.STATIC_DRAW);
+
+        // Step 4: assign a width and height to the PBO
+        gl.pixelStorei(gl.UNPACK_ROW_LENGTH, textureWidth*newLineAt);
+        gl.pixelStorei(gl.UNPACK_IMAGE_HEIGHT, textureHeight*totalTextures/newLineAt);
+
+        // Step 5: Loop through each image in your atlas
+        for (let i = 0; i < totalTextures; i++) {
+            gl.bindBuffer(gl.PIXEL_UNPACK_BUFFER, pbo);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, texture);
+            //Step 6: figure out the origin point of the texture at that index
+            const row = Math.floor(i / newLineAt) * textureHeight;
+            const col = (i % newLineAt) * textureWidth;
+
+            // Step 7: Assign that origin point to the PBO
+            gl.pixelStorei(gl.UNPACK_SKIP_PIXELS, col);
+            gl.pixelStorei(gl.UNPACK_SKIP_ROWS, row);
+
+            // Step 8: Tell webgl to use the PBO and write that texture at its own depth
+            gl.texSubImage3D(
+                gl.TEXTURE_2D_ARRAY, 
+                0,
+
+                0,0,i, 
+
+                textureWidth,
+                textureHeight,
+                1, 
+
+                gl.RGBA, 
+                gl.UNSIGNED_BYTE,
+                0
+            );
+        }
+        gl.generateMipmap(gl.TEXTURE_2D_ARRAY);
+    }
+    /**
+     * 
+     * @param {WebGLRenderingContext} gl 
+     */
+    removeBufferObjects(gl){
+        var lastVBO = this.terrainVBOs.pop();
+        var lastIBO = this.terrainIBOs.pop();
+        gl.deleteBuffer(lastIBO);
+        gl.deleteBuffer(lastVBO);
+    }
+    convertToArray(canvas){
+        return new Uint8Array(canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+    }
+    /**
+     * 
+     * @param {WebGLRenderingContext} gl 
+     */
+    appendBufferObjects(gl){
+        var tempVBO = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER,tempVBO);
+        var tempIBO = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,tempIBO);
+        this.terrainIBOs.push(tempIBO);
+        this.terrainVBOs.push(tempVBO);
     }
     updateTerrainData(gl,VERTICES,INDICES){
         gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
@@ -147,7 +185,14 @@ class TerrainRenderer extends Renderer{
 
         this.terrainRenderProgram = this.linkProgram(gl,vertexShader,fragmentShader);
     }
-    render(gl,timestamp,renderContext){
+    /**
+     * 
+     * @param {WebGL2RenderingContext} gl 
+     * @param {*} timestamp 
+     * @param {*} renderContext 
+     * @param {*} visibleChunks 
+     */
+    render(gl,timestamp,renderContext,visibleChunks){
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
         gl.frontFace(gl.CCW);
@@ -156,45 +201,57 @@ class TerrainRenderer extends Renderer{
         gl.useProgram(this.terrainRenderProgram);
     
         gl.enableVertexAttribArray(this.positionAttribLocation);
-
+        gl.enableVertexAttribArray(this.brightnessAttribLocation);
         gl.enableVertexAttribArray(this.textureAttribLocation);
 
         gl.uniformMatrix4fv(this.rotationUniformLocation, gl.FALSE, renderContext.rotationMatrix);
         gl.uniformMatrix4fv(this.projectionUniformLocation, gl.FALSE, renderContext.projMatrix);
         gl.uniform3fv(this.positionUniformLocation, renderContext.cameraInstance.position);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.terrainVBO);
-        gl.vertexAttribPointer(
-            this.positionAttribLocation,
-            3,
-            gl.FLOAT,
-            gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT,
-            0 
-        );
-        gl.vertexAttribPointer(
-            this.textureAttribLocation,
-            2,
-            gl.FLOAT,
-            gl.FALSE,
-            5 * Float32Array.BYTES_PER_ELEMENT,
-            3 * Float32Array.BYTES_PER_ELEMENT
-        );
-
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.terrainIBO);
-
-        gl.bindTexture(gl.TEXTURE_2D,this.terrainTexture);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY,this.terrainTexture);
         gl.activeTexture(gl.TEXTURE0);
-		gl.drawElements(gl.TRIANGLES, this.bufferBuilder.bufferLength, gl.UNSIGNED_SHORT, 0);
-        
-        gl.disableVertexAttribArray(this.positionAttribLocation);
 
+        for(let i = 0; i < this.terrainVBOs.length; i++){
+            const vbo = this.terrainVBOs[i];
+            const ibo = this.terrainIBOs[i];
+            const bufferLength = this.bufferBuilder.bufferLengths[i];
+            gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+            gl.vertexAttribPointer(
+                this.positionAttribLocation,
+                3,
+                gl.FLOAT,
+                gl.FALSE,
+                9 * Float32Array.BYTES_PER_ELEMENT,
+                0 
+            );
+            gl.vertexAttribPointer(
+                this.textureAttribLocation,
+                3,
+                gl.FLOAT,
+                gl.FALSE,
+                9 * Float32Array.BYTES_PER_ELEMENT,
+                3 * Float32Array.BYTES_PER_ELEMENT
+            );
+            gl.vertexAttribPointer(
+                this.brightnessAttribLocation,
+                3,
+                gl.FLOAT,
+                gl.FALSE,
+                9 * Float32Array.BYTES_PER_ELEMENT,
+                6 * Float32Array.BYTES_PER_ELEMENT
+            );
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+		    gl.drawElements(gl.TRIANGLES, bufferLength, gl.UNSIGNED_SHORT, 0);
+        }
+
+        gl.disableVertexAttribArray(this.positionAttribLocation);
+        gl.disableVertexAttribArray(this.brightnessAttribLocation);
         gl.disableVertexAttribArray(this.textureAttribLocation);
     }
     attachBufferBuilder(bufferBuilder){
         if(!(bufferBuilder instanceof TerrainBufferBuilder))return;
         this.bufferBuilder = bufferBuilder;
-        bufferBuilder.setBuildTo(this.terrainVBO,this.terrainIBO);
+        bufferBuilder.setBuildTo(this);
     }
 }
 

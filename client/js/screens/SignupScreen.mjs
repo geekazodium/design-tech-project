@@ -1,7 +1,4 @@
 import { client } from "../ClientMain.mjs";
-import { RenderDispatcher } from "../RenderDispatcher.mjs";
-import { AbstractScreen } from "./AbstractScreen.mjs";
-import { IngameScreen } from "./IngameScreen.mjs";
 import { LoginScreen } from "./LoginScreen.mjs";
 import { MenuScreen } from "./MenuScreen.mjs";
 
@@ -20,7 +17,7 @@ class SignupScreen extends MenuScreen{
 
         this.loginButton = this.createButton(0,75,150,"log in instead");
         this.loginButton.onclick = (event)=>{
-            client.setScreen(new LoginScreen(this.renderDispatcher));
+            client.setScreen(new LoginScreen(this.renderDispatcher,this.parent));
         }
         this.loginButton.style.fontSize = "15px";
 
@@ -46,7 +43,7 @@ class SignupScreen extends MenuScreen{
                 return;
             }
             this.signupStatus.innerText = "contacting server...";
-            var success = await client.registerAccount(this.usernameInput.value,this.passwordInput.value);
+            var success = await client.authHelper.registerAccount(this.usernameInput.value,this.passwordInput.value);
             this.signupStatus.innerText = success;
         };
         

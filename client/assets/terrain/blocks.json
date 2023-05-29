@@ -1,0 +1,28 @@
+[
+    {
+        "id":1,
+        "name":"grass-block",
+        "type":"dir-const",
+        "posY":"grass-top",
+        "negY":"dirt-all",
+        "default":"grass-side"
+    },
+    {
+        "id":2,
+        "name":"dirt-block",
+        "type":"dir-none",
+        "default":"dirt-all"
+    },
+    {
+        "id":3,
+        "name":"log-block",
+        "type":"dir-none",
+        "default":"log-side"
+    },
+    {
+        "id":4,
+        "name":"leaf-block",
+        "type":"dir-none",
+        "default":"leaf-all"
+    }
+]

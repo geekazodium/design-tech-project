@@ -2,20 +2,29 @@
     "version":1,
     "textures":[
         {
-            "id":"skybox-side",
-            "x":0,
-            "y":0,
-            "width":16,
-            "height":16,
-            "src":"./assets/skybox.png"
+            "index":0,
+            "id":"grass-top",
+            "src":"./assets/terrain/grass-top.png"
         },
         {
+            "index":1,
             "id":"grass-side",
-            "x":16,
-            "y":0,
-            "width":16,
-            "height":16,
             "src":"./assets/terrain/grass-side.png"
+        },
+        {
+            "index":2,
+            "id":"dirt-all",
+            "src":"./assets/terrain/dirt-all.png"
+        },
+        {
+            "index":3,
+            "id":"log-side",
+            "src":"./assets/terrain/log-side.png"
+        },
+        {
+            "index":4,
+            "id":"leaf-all",
+            "src":"./assets/terrain/leaf-all.png"
         }
     ]
 }

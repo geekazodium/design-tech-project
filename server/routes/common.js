@@ -7,14 +7,32 @@ function loadFile(fileName){
         if (err) {
             return console.error(err);
         }
-        commons.set(fileName,f);
+        var ignore = false;
+        var content = f.split("\n");
+        var filtered = [];
+        content.forEach(line => {
+            if(line.includes("//@ClientIgnoreStart")){
+                ignore = true;
+                return;
+            }
+            if(line.includes("//@ClientIgnoreEnd")){
+                ignore = false;
+                return;
+            }
+            if(ignore) return;
+            filtered.push(line);
+        })
+        commons.set(fileName,filtered.join("\n"));
     });
 }
-loadFile("/Packets.mjs");
-loadFile("/Packet.mjs");
-loadFile("/C2S/RequestConnectionC2SPacket.mjs");
+loadFile("/requests/LoginRequest.mjs");
+loadFile("/requests/RequestHandler.mjs");
+loadFile("/requests/SignupRequest.mjs");
+loadFile("/requests/AccountInfoRequest.mjs");
+loadFile("/requests/CreateGameRequest.mjs");
+loadFile("/PerlinNoise.mjs");
+loadFile("/Vec.mjs");
 loadFile("/SHA-256.mjs");
-loadFile("/C2S/RegisterAccountC2SPacket.mjs");
 loadFile("/BigInteger.js");
 
 router.get('/*', function(req, res, next) {

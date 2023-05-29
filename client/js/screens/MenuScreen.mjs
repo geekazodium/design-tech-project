@@ -1,11 +1,16 @@
 import { client } from "../ClientMain.mjs";
+import { Keybind } from "../Keybind.mjs";
 import { RenderDispatcher } from "../RenderDispatcher.mjs";
+import { BlankRenderer } from "../render/BlankBackgroundRenderer.mjs";
 import { AbstractScreen } from "./AbstractScreen.mjs";
 import { IngameScreen } from "./IngameScreen.mjs";
 
 class MenuScreen extends AbstractScreen{
+    constructor(renderDispatcher,parent){
+        super(renderDispatcher,parent);
+    }
     onSet(){
-        this.renderDispatcher.initRenderers([]);
+        this.renderDispatcher.initRenderers([new BlankRenderer()]);
         client.mouseInputHandler.canLock = false;
         this.createMenuItems();
     }
@@ -37,6 +42,7 @@ class MenuScreen extends AbstractScreen{
         textOverlay.style.marginTop = "6px";
         textOverlay.style.zIndex = 1;
         textOverlay.style.pointerEvents = "none";
+
         return field;
     }
     createButton(x,maxY,width,text){
@@ -46,6 +52,48 @@ class MenuScreen extends AbstractScreen{
         this.styleAsButton(button,x,maxY,width);
         return button;
     }
+    /**
+     * @description styles an html element in *title* form. This exists because I 
+     * was too lasy to use a css file. also creates some flexibility in being 
+     * able to create elements with slightly different css while avoiding the 
+     * suffering that is the actual stylesheet
+     * @param {HTMLElement} element the html element to style
+     */
+    styleAsTitle(element,maxY){ 
+        stylingHelper.styleAsTitle(element,maxY);
+    }
+    /**
+     * @description styles an html element in *button* form. This exists because I 
+     * was too lasy to use a css file. also creates some flexibility in being 
+     * able to create elements with slightly different css while avoiding the 
+     * suffering that is the actual stylesheet
+     * @param {HTMLElement} element the html element to style
+     * @param {Number} x x position of the center of the element, relative to the center of the screen
+     * @param {Number} maxY y position of the top of the element, relative to the center of the screen
+     * @param {Number} width the width of the button
+     */
+    styleAsButton(element,x,maxY,width){
+        stylingHelper.styleAsButton(element,x,maxY,width);
+    }
+    /**
+     * @description styles an html element in *field* form. This exists because I 
+     * was too lasy to use a css file. also creates some flexibility in being 
+     * able to create elements with slightly different css while avoiding the 
+     * suffering that is the actual stylesheet
+     * @param {HTMLElement} element the html element to style
+     */
+    styleAsField(element){
+        stylingHelper.styleAsField(element);
+    }
+    usernameInvalid(usernameInput){
+        return (
+            usernameInput.length<3||
+            usernameInput.length>16
+        );
+    }
+}
+
+class StylingHelper{
     /**
      * @description styles an html element in *title* form. This exists because I 
      * was too lasy to use a css file. also creates some flexibility in being 
@@ -75,7 +123,7 @@ class MenuScreen extends AbstractScreen{
      */
     styleAsButton(element,x,maxY,width){
         element.style.fontFamily = "math";
-        element.style.fontSize = "30px"
+        element.style.fontSize = "20px"
         element.style.top = "calc(50vh + "+maxY+"px)";
         element.style.left = "calc(50vw + "+(x-width/2)+"px)";
         element.style.width = width+"px";
@@ -95,12 +143,8 @@ class MenuScreen extends AbstractScreen{
         element.style.textAlign = "left";
         element.style.width = "calc(100% - 8px)";
     }
-    usernameInvalid(usernameInput){
-        return (
-            usernameInput.length<3||
-            usernameInput.length>16
-        );
-    }
 }
 
-export {MenuScreen};
+const stylingHelper = new StylingHelper();
+
+export {MenuScreen,stylingHelper};
