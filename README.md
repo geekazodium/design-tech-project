@@ -1,8 +1,8 @@
 # design tech project
-    Stephanie's design tech project
+Stephanie's design tech project
     
 # Setup
-    Before continuing development, remember to ensure node modules are up to date
+Before continuing development, remember to ensure node modules are up to date
 ```
 npm audit
 ```
